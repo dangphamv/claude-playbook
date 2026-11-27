@@ -1,16 +1,30 @@
 # danny-playbook
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A Claude Code plugin that turns the [idea → release playbook](reference/claude-code-playbook.html) into something you can run in any repository.
 
 One command configures the current project — subagents, phase skills, hooks, path rules, permissions and a local `CLAUDE.local.md` — **without committing anything**: every file the kit creates is listed in `.git/info/exclude`, and existing files are never overwritten. Then each phase of the playbook is a skill that does the work and **stops for your decision** before moving on.
 
 ## Install
 ```bash
-# once per machine (private repo: needs git access to dangphamv/claude-playbook)
 claude plugin marketplace add dangphamv/claude-playbook
 claude plugin install danny-playbook@danny-playbook
 ```
-Develop/test locally without installing: `claude --plugin-dir ~/project/claude-playbook/plugins/danny-playbook`.
+Or inside a session: `/plugin marketplace add dangphamv/claude-playbook`, then `/plugin install danny-playbook@danny-playbook`.
+
+Requirements: Claude Code, `git`, `jq`, bash. macOS or Linux (Windows via WSL2).
+
+Team setup — commit this to the repo's `.claude/settings.json` so everyone is offered the plugin:
+```json
+{
+  "extraKnownMarketplaces": {
+    "danny-playbook": { "source": { "source": "github", "repo": "dangphamv/claude-playbook" } }
+  },
+  "enabledPlugins": { "danny-playbook@danny-playbook": true }
+}
+```
+Pin a version for a team by tag (`danny-playbook--v0.3.0`). Develop/test a local clone without installing: `claude --plugin-dir ./plugins/danny-playbook`.
 
 No plugin on the machine? Point Claude at [SETUP.md](SETUP.md) — same result.
 

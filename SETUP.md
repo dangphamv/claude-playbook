@@ -2,11 +2,11 @@
 
 Give this file to Claude Code inside the target project, e.g.:
 
-> Follow ~/project/claude-playbook/SETUP.md to set up this project.
+> Follow https://github.com/dangphamv/claude-playbook/blob/main/SETUP.md to set up this project.
 
 ## Instructions for Claude
-1. Locate the kit. Use `KIT=~/project/claude-playbook/plugins/danny-playbook` if it exists; otherwise clone it:
-   `gh repo clone dangphamv/claude-playbook /tmp/claude-playbook && KIT=/tmp/claude-playbook/plugins/danny-playbook`.
+1. Get the kit: if a local clone exists, use its `plugins/danny-playbook` as `KIT`; otherwise
+   `git clone --depth 1 https://github.com/dangphamv/claude-playbook "$TMPDIR/claude-playbook"` and set `KIT="$TMPDIR/claude-playbook/plugins/danny-playbook"`.
 2. Read `$KIT/skills/init/SKILL.md` and follow its steps exactly, reading `${CLAUDE_PLUGIN_ROOT}` as `$KIT`.
    The `!` lines at the top of that file are shell commands: run them yourself to gather the same context.
 3. Respect every CHECKPOINT: ask with AskUserQuestion and stop until the user answers.
