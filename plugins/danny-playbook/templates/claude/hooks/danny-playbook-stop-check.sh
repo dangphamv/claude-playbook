@@ -8,6 +8,8 @@ cfg="$CLAUDE_PROJECT_DIR/.claude/playbook.json"
 cmd=$(jq -r '.commands.typecheck // empty' "$cfg")
 [ -n "$cmd" ] || exit 0
 cd "$CLAUDE_PROJECT_DIR" || exit 0
+. "$CLAUDE_PROJECT_DIR/.claude/hooks/danny-playbook-lib.sh"
+runnable "$cmd" || exit 0   # toolchain not set up yet (e.g. before scaffolding)
 # Nothing changed since the last commit → nothing to check.
 [ -z "$(git status --porcelain 2>/dev/null)" ] && exit 0
 out=$(eval "$cmd" 2>&1) || { echo "typecheck failed ($cmd):" >&2; echo "$out" | tail -60 >&2; exit 2; }

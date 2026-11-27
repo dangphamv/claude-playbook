@@ -16,5 +16,5 @@ Tip for the user: `/model opusplan` and plan mode (Shift+Tab) fit this phase.
 4. Write `<docs.dir>/plan.md`: phase 0 scaffold, then parallel tracks; each task = story ID, files, tests, DoD.
 5. CHECKPOINT 2 — tell the user they can edit the plan (Ctrl+G in plan mode) and ask approve / change. STOP until approved.
 6. If approved and the project has no scaffold yet, offer to do phase-0 scaffold (monorepo, CI, local deps) as its own commit(s); ask first.
-7. Fill `commands.*` in .claude/playbook.json if they are now known. Log row; phase "4-architect".
+7. After scaffolding, fill `commands.*` in .claude/playbook.json (format gets the file path as last argument) and run each once to prove it works — the hooks start enforcing them immediately. Log row; phase "4-architect".
 8. Say: "Next: /pb-feature <first story ID>". STOP.

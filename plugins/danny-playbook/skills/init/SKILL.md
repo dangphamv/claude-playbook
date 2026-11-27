@@ -16,10 +16,10 @@ You are installing a local, uncommitted toolkit. Follow the steps in order and s
 
 1. If this is not a git repository, ask whether to run `git init`. STOP until answered.
 2. If `.claude/playbook.json` already exists, say so and offer `/danny-playbook:update` instead; STOP.
-3. Detect: greenfield (few or no tracked files) vs existing codebase; the stack; real commands for format/lint/typecheck/test/build (package.json scripts, Makefile, CI workflows, pyproject). Prefer commands that already exist in the project. For `format`, the command receives a file path as its last argument (e.g. `pnpm exec prettier --write`, `ruff format`); leave it empty if nothing fits.
+3. Detect: greenfield (few or no tracked files) vs existing codebase; the stack; real commands for format/lint/typecheck/test/build (package.json scripts, Makefile, CI workflows, pyproject). Only propose a command that already works in this repo today — the tool and its config exist (verify cheaply, e.g. `<tool> --version` or the script exists in package.json). **Greenfield: leave every command empty**; /pb-architect fills them after scaffolding. Hooks run these commands on every edit and before every stop, so a command that cannot run yet only produces noise. For `format`, the command receives a file path as its last argument (e.g. `pnpm exec prettier --write`, `ruff format`); leave it empty if nothing fits.
 4. CHECKPOINT 1 — one AskUserQuestion call:
    - Docs (PRD, ADR, stories, log): "tracked" — committed under docs/ (your own project) — or "private" — kept in .playbook/docs and excluded from git (someone else's / team repo).
-   - Confirm the detected commands (show them; offer "edit").
+   - Confirm the detected commands (show them; offer "edit"). For greenfield, say they stay empty until scaffolding.
    - Project type confirmation: new product / feature work on an existing codebase.
    STOP until answered.
 5. Run: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/install-kit.sh" "$PWD" --docs <tracked|private>` and show its output. If it prints a WARNING about files not excluded, stop and report.
