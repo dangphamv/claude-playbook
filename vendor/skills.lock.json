@@ -1,0 +1,69 @@
+{
+  "comment": "Third-party skills copied into the kit, pinned by commit. Refresh with scripts/vendor-skills.sh (bump sha first). Only MIT/Apache-2.0 sources; CC-BY-SA or unlicensed skills are offered as optional installs by /danny-playbook:init instead.",
+  "skills": [
+    {
+      "name": "ui-ux-pro-max",
+      "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sha": "11ca2b3bdd555649f278ee348c32a9302b24dcf1",
+      "path": ".claude/skills/ui-ux-pro-max",
+      "license": "MIT"
+    },
+    {
+      "name": "frontend-design",
+      "repo": "anthropics/skills",
+      "sha": "e4bb5d960d87126ff3b3a8af1a104b7db67560ba",
+      "path": "skills/frontend-design",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "webapp-testing",
+      "repo": "anthropics/skills",
+      "sha": "e4bb5d960d87126ff3b3a8af1a104b7db67560ba",
+      "path": "skills/webapp-testing",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "brainstorming",
+      "repo": "obra/superpowers",
+      "sha": "22f0b463e7a5e579904dd6211a520321035526f7",
+      "path": "skills/brainstorming",
+      "license": "MIT",
+      "install": "reference"
+    },
+    {
+      "name": "writing-plans",
+      "repo": "obra/superpowers",
+      "sha": "22f0b463e7a5e579904dd6211a520321035526f7",
+      "path": "skills/writing-plans",
+      "license": "MIT"
+    },
+    {
+      "name": "test-driven-development",
+      "repo": "obra/superpowers",
+      "sha": "22f0b463e7a5e579904dd6211a520321035526f7",
+      "path": "skills/test-driven-development",
+      "license": "MIT"
+    },
+    {
+      "name": "systematic-debugging",
+      "repo": "obra/superpowers",
+      "sha": "22f0b463e7a5e579904dd6211a520321035526f7",
+      "path": "skills/systematic-debugging",
+      "license": "MIT"
+    },
+    {
+      "name": "verification-before-completion",
+      "repo": "obra/superpowers",
+      "sha": "22f0b463e7a5e579904dd6211a520321035526f7",
+      "path": "skills/verification-before-completion",
+      "license": "MIT"
+    },
+    {
+      "name": "supabase-postgres-best-practices",
+      "repo": "supabase/agent-skills",
+      "sha": "c9be0e931b7930f7d02126d04774d904c381e7d7",
+      "path": "skills/supabase-postgres-best-practices",
+      "license": "MIT"
+    }
+  ]
+}

@@ -34,6 +34,12 @@ cd my-project && claude
 | 7 Release | `/pb-release` | checklist, every deploy/migration | PR, tag, `runbook.md` |
 | 8 Operate | `/pb-operate` | which routines | scheduled routines, runbook |
 | Maintenance | `/pb-hotfix`, `/pb-retro` | rollback, deploy, new guard | postmortem, rule/hook/test |
+| Auto | `/pb-auto [goal] [--until <phase>]`, `/pb-mode guided\|auto` | only outward/irreversible actions | all of the above, decisions logged as `auto:` |
+
+### Guided vs auto
+- **guided** (default): every checkpoint asks you and stops. Best for learning the process or high-stakes decisions.
+- **auto**: `/pb-auto "<goal>"` moves through the phases by itself, delegates to the right agent at each step, picks the recommended option at each checkpoint and logs it (`auto:` rows in `playbook-log.md`). It stops before release by default (`auto.stopBefore`), and always stops for push/PR/deploy/production data/publishing/credentials, for conflicting requirements, and when a check still fails after 3 attempts. Re-run `/pb-auto` to resume from the log; revisit any auto-decision with the matching `/pb-*` skill in guided mode.
+- Pair auto with Claude Code's permission auto mode (Shift+Tab → auto) so routine commands are not prompted.
 
 Every checkpoint appends a row to `playbook-log.md` (decision · why · evidence), which doubles as interview material.
 
@@ -45,7 +51,8 @@ Every checkpoint appends a row to `playbook-log.md` (decision · why · evidence
 | `.claude/hooks/danny-playbook-*.sh` | block `.env` reads; run your format command after edits; typecheck before Claude stops; session status |
 | `.claude/rules/*.md` | path-scoped rules for your stack (created at init) |
 | `.claude/settings.local.json` | permissions + hook registration (merged, personal) |
-| `.claude/playbook.json` | docs mode/dir, your format/lint/typecheck/test/build commands, current phase |
+| `.claude/playbook.json` | mode (guided/auto), docs mode/dir, your format/lint/typecheck/test/build commands, current phase |
+| `.claude/playbook/bin/pb-config`, `pb-context` | read/write the config and gather skill context through one allow-listed path (Claude Code protects `.claude/` from edits, and a failing `!` command aborts a skill) |
 | `CLAUDE.local.md` | local project memory (a committed `CLAUDE.md` is left untouched) |
 | `.claude/playbook/templates/` | PRD, stories, ADR, plan, test plan, runbook, log templates |
 
@@ -61,6 +68,12 @@ Remove everything the kit created: `/danny-playbook:remove`. Pull newer kit file
 | `pb-security-reviewer` | sonnet, read-only | Threat model & diff review | OWASP Top 10, API Top 10 2023, LLM Top 10, ASVS; source→sink evidence |
 | `pb-ux-reviewer` | sonnet, read-only | Screens & prototypes | WCAG 2.2 AA, Nielsen heuristics, VN locale (VND, dates, diacritics), mobile |
 | `pb-devops-sre` | sonnet, read-only | Docker, CI/CD, IaC, release readiness | CI supply-chain security, build-once images, safe deploy/rollback, SLO-based ops |
+
+### Third-party skills (vendored, pinned)
+Installed with the kit and preloaded into the agents that use them (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)):
+`ui-ux-pro-max` + `frontend-design` → pb-ux-reviewer, /pb-ux · `test-driven-development` + `webapp-testing` → pb-qa-engineer, /pb-feature · `supabase-postgres-best-practices` → pb-db-reviewer · `writing-plans` → pb-architect · `systematic-debugging` → /pb-hotfix · `verification-before-completion` → /pb-feature · `brainstorming` (reference only, so it cannot hijack checkpoints) → /pb-product.
+Refresh: bump a `sha` in `vendor/skills.lock.json`, run `scripts/vendor-skills.sh`, then `evals/run.sh`.
+Not vendored (license): Trail of Bits security skills (CC-BY-SA) and Vercel web-design-guidelines (no license) — /danny-playbook:init offers to install them from source.
 
 Every reviewer returns `[severity] file:line — problem — failure/exploit scenario — fix`, skips style, and ends with **Not verified**.
 

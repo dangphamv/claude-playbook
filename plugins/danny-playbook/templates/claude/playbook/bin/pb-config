@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Read/write .claude/playbook.json without the Edit tool (Claude Code protects .claude/ edits; this path is allow-listed).
+#   pb-config get [jq-path]            e.g. pb-config get .mode
+#   pb-config set <key.path> <value>   e.g. pb-config set mode auto | set phase 2-ba | set commands.test "pnpm test" | set auto.stopBefore 8-operate
+set -euo pipefail
+root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cfg="$root/.claude/playbook.json"
+[ -f "$cfg" ] || { echo "no $cfg — run /danny-playbook:init" >&2; exit 1; }
+case "${1:-get}" in
+  get) jq "${2:-.}" "$cfg" ;;
+  set)
+    key="${2:?key}"; val="${3-}"
+    case "$key" in
+      mode) [[ "$val" =~ ^(guided|auto)$ ]] || { echo "mode must be guided or auto" >&2; exit 64; } ;;
+      phase|auto.stopBefore) [[ "$val" =~ ^[0-8]-[a-z-]+$ ]] || { echo "phase looks like 2-ba" >&2; exit 64; } ;;
+      commands.format|commands.lint|commands.typecheck|commands.test|commands.build|auto.maxFixAttempts|docs.mode|docs.dir) ;;
+      *) echo "unknown key: $key" >&2; exit 64 ;;
+    esac
+    path=".$(echo "$key" | sed 's/\./"."/g; s/^/"/; s/$/"/')"
+    if [[ "$val" =~ ^[0-9]+$ ]]; then jq "$path = $val" "$cfg"; else jq --arg v "$val" "$path = \$v" "$cfg"; fi > "$cfg.tmp" && mv "$cfg.tmp" "$cfg"
+    jq -c "$path" "$cfg" ;;
+  *) echo "usage: pb-config get [path] | set <key> <value>" >&2; exit 64 ;;
+esac

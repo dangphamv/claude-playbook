@@ -8,9 +8,9 @@ for mode in empty git; do
   d="$(mktemp -d)"; [ "$mode" = git ] && git -C "$d" init -q
   while IFS= read -r line; do
     file="${line%%:*}"; cmd="${line#*:}"
-    cmd="${cmd//\$\{CLAUDE_PLUGIN_ROOT\}/$KIT}"
+    cmd="${cmd//\$\{CLAUDE_PLUGIN_ROOT\}/$KIT}"; cmd="${cmd//.claude\/playbook\/bin/$KIT/templates/claude/playbook/bin}"
     if ! (cd "$d" && bash -c "$cmd" >/dev/null 2>&1); then echo "FAIL ($mode) ${file#$KIT/}: $cmd"; fail=1; fi
-  done < <(grep -rHo '!`[^`]*`' "$KIT/skills" "$KIT/templates/claude/skills" | sed -E 's/:!`(.*)`$/:\1/')
+  done < <(grep -rHo --include=SKILL.md '!`[^`]*`' "$KIT/skills" "$KIT/templates/claude/skills" | sed -E 's/:!`(.*)`$/:\1/')
   rm -rf "$d"
 done
 [ $fail = 0 ] && echo "all skill shell commands exit 0"

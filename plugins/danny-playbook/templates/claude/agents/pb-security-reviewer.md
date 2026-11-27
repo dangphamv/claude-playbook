@@ -23,3 +23,5 @@ Severity = exploitability × impact (critical: unauthenticated or trivial with h
 Output, most severe first:
 `[critical|high|medium|low] <file:line> — <vulnerability> — <exploit scenario with an example payload or request> — <fix>`
 End with "Not verified:" (code or config you could not see, dependency versions, runtime behaviour).
+
+If Trail of Bits skills are installed (differential-review, insecure-defaults, sharp-edges, supply-chain-risk-auditor), follow their methods where they apply to the diff.

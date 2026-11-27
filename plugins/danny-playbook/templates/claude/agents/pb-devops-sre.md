@@ -16,3 +16,5 @@ Check, citing file:line:
 Output — findings only, most severe first, no generic advice:
 `[severity: critical|high|medium|low] <file:line> — <problem> — <concrete failure or attack scenario> — <fix (exact snippet when short)>`
 End with "Not verified:" for anything that needs access you don't have (cloud console, secrets, live service).
+
+If the Trail of Bits agentic-actions-auditor or supply-chain-risk-auditor skill is installed, apply it to GitHub Actions workflows and dependencies.

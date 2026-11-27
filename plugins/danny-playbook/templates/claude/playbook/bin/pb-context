@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Read-only context for the /pb-* skills' !`...` lines. One allow-listed entry point so skills never trigger
+# permission prompts, and every subcommand exits 0 (a failing !`command` aborts the whole skill).
+root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"; cd "$root" 2>/dev/null || exit 0
+cfg=.claude/playbook.json
+docs() { jq -r '.docs.dir // "docs"' "$cfg" 2>/dev/null || echo docs; }
+case "${1:-config}" in
+  config)  cat "$cfg" 2>/dev/null || echo "not set up — run /danny-playbook:init first" ;;
+  mode)    jq -r '.mode // "guided"' "$cfg" 2>/dev/null || echo guided ;;
+  log)     tail -"${2:-8}" "$(docs)/playbook-log.md" 2>/dev/null || echo "(no log yet)" ;;
+  docs)    ls "$(docs)" "$(docs)/adr" 2>/dev/null | head -40 ;;
+  adr)     ls "$(docs)/adr" 2>/dev/null || echo "(none)" ;;
+  prd)     head -"${2:-60}" "$(docs)/prd.md" 2>/dev/null || echo "(none)" ;;
+  git)     git log --oneline -5 2>/dev/null; git status --short 2>/dev/null | head -10 ;;
+  branch)  git branch --show-current 2>/dev/null ;;
+  tag)     git describe --tags --abbrev=0 2>/dev/null || echo "(no tags)" ;;
+  ci)      gh run list -L 3 2>/dev/null || echo "(gh not available)" ;;
+  skills)  ls .claude/skills 2>/dev/null | grep '^pb-' ;;
+  rules)   ls .claude/rules 2>/dev/null; wc -l CLAUDE.local.md 2>/dev/null ;;
+  *)       echo "unknown: $1" ;;
+esac
+exit 0

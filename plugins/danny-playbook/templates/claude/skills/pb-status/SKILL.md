@@ -3,10 +3,10 @@ name: pb-status
 description: Show where this project is in the playbook (phase, open stories, last decisions) and the one recommended next command.
 disable-model-invocation: true
 ---
-Config: !`cat .claude/playbook.json 2>/dev/null || echo "{}"; true`
-Docs present: !`d=$(jq -r '.docs.dir // "docs"' .claude/playbook.json 2>/dev/null); ls "$d" "$d/adr" 2>/dev/null | head -40; true`
-Recent log: !`d=$(jq -r '.docs.dir // "docs"' .claude/playbook.json 2>/dev/null); tail -8 "$d/playbook-log.md" 2>/dev/null || echo "(no log yet)"; true`
-Git: !`git log --oneline -5 2>/dev/null; git status --short 2>/dev/null | head -10; true`
+Config: !`.claude/playbook/bin/pb-context config`
+Docs present: !`.claude/playbook/bin/pb-context docs`
+Recent log: !`.claude/playbook/bin/pb-context log 8`
+Git: !`.claude/playbook/bin/pb-context git`
 
 Phases and the file that proves each one is done:
 | # | Skill | Done when |
@@ -20,7 +20,8 @@ Phases and the file that proves each one is done:
 | 6 | /pb-qa | test-plan.md updated, review findings resolved |
 | 7 | /pb-release | PR merged, tag/release, runbook.md |
 | 8 | /pb-operate | routine/monitoring set up |
+| auto | /pb-auto [goal] [--until <phase>], /pb-mode guided\|auto | chains phases, logs auto-decisions |
 | maint | /pb-hotfix, /pb-retro | postmortem / CLAUDE.local.md or hook updated |
 
-Report in at most 8 lines: current phase, what is done (with files), what is missing, and exactly ONE recommended next command with the reason.
+Report in at most 8 lines (include the current mode, guided or auto): current phase, what is done (with files), what is missing, and exactly ONE recommended next command with the reason.
 Do not start that command yourself.

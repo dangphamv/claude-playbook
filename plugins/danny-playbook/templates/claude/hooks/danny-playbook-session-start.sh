@@ -4,7 +4,7 @@ cd "$CLAUDE_PROJECT_DIR" 2>/dev/null || exit 0
 cfg=.claude/playbook.json
 [ -f "$cfg" ] || exit 0
 dir=$(jq -r '.docs.dir' "$cfg")
-echo "danny-playbook: phase=$(jq -r '.phase' "$cfg"), docs=$dir ($(jq -r '.docs.mode' "$cfg"))"
+echo "danny-playbook: mode=$(jq -r '.mode // "guided"' "$cfg"), phase=$(jq -r '.phase' "$cfg"), docs=$dir ($(jq -r '.docs.mode' "$cfg"))"
 echo "branch: $(git branch --show-current 2>/dev/null)"
 git status --short 2>/dev/null | head -15
 if [ -f "$dir/stories.md" ]; then

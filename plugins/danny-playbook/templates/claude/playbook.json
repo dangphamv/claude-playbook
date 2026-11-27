@@ -1,7 +1,15 @@
 {
   "version": 1,
   "kit": "danny-playbook",
-  "docs": { "mode": "tracked", "dir": "docs" },
+  "mode": "guided",
+  "auto": {
+    "stopBefore": "7-release",
+    "maxFixAttempts": 3
+  },
+  "docs": {
+    "mode": "tracked",
+    "dir": "docs"
+  },
   "commands": {
     "format": "",
     "lint": "",

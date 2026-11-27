@@ -4,10 +4,12 @@ description: Phase 7 — production checklist, PR to merge, build-once images/ar
 disable-model-invocation: true
 argument-hint: "[version]"
 ---
+Mode: !`.claude/playbook/bin/pb-context mode`
+If the mode is **auto**: at each CHECKPOINT choose the recommended option yourself, log it as `auto: <decision>` with the reason, and continue instead of stopping (outward or irreversible actions — push, PR, deploy, prod migration, publish, credentials — still require asking). At the end, instead of STOP, say which phase comes next; /pb-auto chains them.
 Version: $ARGUMENTS
-Config: !`cat .claude/playbook.json; true`
-Last tag: !`git describe --tags --abbrev=0 2>/dev/null || echo "(no tags)"; true`
-CI: !`gh run list -L 3 2>/dev/null || echo "(gh not available)"; true`
+Config: !`.claude/playbook/bin/pb-context config`
+Last tag: !`.claude/playbook/bin/pb-context tag`
+CI: !`.claude/playbook/bin/pb-context ci`
 
 Every outward action (push, PR, merge, deploy, migration, tag, release) needs an explicit yes from the user in this session.
 
@@ -17,4 +19,4 @@ Every outward action (push, PR, merge, deploy, migration, tag, release) needs an
 4. Deploy: prefer build-once artifacts (image tagged by commit SHA, promoted across environments). CHECKPOINT 2 — before migrating or deploying production, state exactly what will run where; STOP until the user says yes.
 5. Smoke test (health, one core read, one core write path); report results.
 6. Tag + release notes (`gh release create`) after approval. Write/refresh `<docs.dir>/runbook.md`: deploy, rollback, secret rotation, common incidents.
-7. Log row; phase "7-release". Say: "Next: /pb-operate". STOP.
+7. Log row; `.claude/playbook/bin/pb-config set phase 7-release`. Say: "Next: /pb-operate". STOP.
