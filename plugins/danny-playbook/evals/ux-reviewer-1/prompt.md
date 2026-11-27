@@ -1,0 +1,1 @@
+Review ux/checkout.html. Delegate this to the pb-ux-reviewer subagent (its agent type may carry a plugin prefix, e.g. pb-eval:pb-ux-reviewer) and return its findings verbatim, without adding your own.

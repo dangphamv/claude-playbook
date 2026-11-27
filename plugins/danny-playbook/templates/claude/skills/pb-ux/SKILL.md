@@ -2,6 +2,7 @@
 name: pb-ux
 description: Phase 3 — user flows, 2-3 visual directions to choose from, a clickable prototype, then design tokens and a frontend rule.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "[flow or story IDs]"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`

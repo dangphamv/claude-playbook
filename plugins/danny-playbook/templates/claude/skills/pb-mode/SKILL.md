@@ -2,6 +2,7 @@
 name: pb-mode
 description: Switch the playbook between guided mode (stop and ask at every checkpoint) and auto mode (pick recommended options, log them, keep going; still stop for outward/irreversible actions).
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "guided | auto [--stop-before <phase>]"
 ---
 Requested: $ARGUMENTS

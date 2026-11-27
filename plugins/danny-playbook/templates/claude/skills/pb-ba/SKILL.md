@@ -2,6 +2,7 @@
 name: pb-ba
 description: Phase 2 — PRD to testable user stories with Given/When/Then, data model, API contract, permission matrix and state machines.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "[epic or PRD section]"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`

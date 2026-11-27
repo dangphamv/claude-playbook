@@ -1,0 +1,1 @@
+Review migrations/002_orders.sql and src/coupons.ts. Delegate this to the pb-db-reviewer subagent (its agent type may carry a plugin prefix, e.g. pb-eval:pb-db-reviewer) and return its findings verbatim, without adding your own.

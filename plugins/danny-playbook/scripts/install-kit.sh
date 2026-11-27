@@ -41,6 +41,8 @@ if [ "$REMOVE" = 1 ]; then
   [ -f "$MANIFEST" ] || { echo "nothing to remove: no $MANIFEST"; exit 0; }
   while IFS= read -r f; do [ -n "$f" ] && [ -e "$f" ] && rm -f "$f" && echo "removed $f"; done < "$MANIFEST"
   rm -f "$MANIFEST"
+  [ -f .worktreeinclude ] && awk -v b="$BEGIN" -v e="$END" '$0==b{s=1;next} $0==e{s=0;next} !s' .worktreeinclude > .worktreeinclude.tmp && mv .worktreeinclude.tmp .worktreeinclude
+  [ -f .worktreeinclude ] && [ ! -s .worktreeinclude ] && rm -f .worktreeinclude
   find .claude -type d -empty -delete 2>/dev/null || true
   strip_block
   echo "kit removed (settings.local.json hooks/permissions from the kit were left in place; review it)"
@@ -108,10 +110,18 @@ else
   echo "merged kit permissions + hooks into $SL"
 fi
 
-# 6. Private docs dir.
+# 6. .worktreeinclude: Claude Code copies matching gitignored files into the worktrees it creates
+# (--worktree, subagent isolation). Agents/skills are read through from the main checkout; hooks,
+# config and notes are not, so list them. Our block is rewritten each run; other lines are kept.
+WTI=.worktreeinclude
+[ -f "$WTI" ] || { touch "$WTI"; record "$WTI"; }
+awk -v b="$BEGIN" -v e="$END" '$0==b{s=1;next} $0==e{s=0;next} !s' "$WTI" > "$WTI.tmp" && mv "$WTI.tmp" "$WTI"
+printf '%s\n' "$BEGIN" "CLAUDE.local.md" ".claude/settings.local.json" ".claude/playbook.json" ".claude/playbook.manifest" ".claude/playbook/**" ".claude/hooks/**" ".claude/rules/**" "$END" >> "$WTI"
+
+# 7. Private docs dir.
 if [ "$DOCS_MODE" = private ]; then mkdir -p "$DOCS_DIR"; fi
 
-# 7. Manifest + git exclude block (rewritten every run, so it is always exact).
+# 8. Manifest + git exclude block (rewritten every run, so it is always exact).
 mkdir -p .claude && awk 'NF && !seen[$0]++' "$LIST" > "$MANIFEST"
 strip_block
 {

@@ -18,7 +18,7 @@
       "Read(./.env.local)",
       "Read(./.env.*.local)",
       "Read(./.env.production*)",
-      "Read(./secrets/**)",
+      "Read(**/secrets/**)",
       "Bash(rm -rf /*)",
       "Bash(git push --force*)"
     ]

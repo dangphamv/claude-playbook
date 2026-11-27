@@ -1,0 +1,65 @@
+schema_version: "1.1"
+name: ux-reviewer-1
+description: pb-ux-reviewer finds the seeded defects in its fixture
+tags: [pb-ux-reviewer]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 900
+  allowed_tools: [Agent, Read, Glob, Grep]
+graders:
+  - name: delegated-to-pb-ux-reviewer
+    type: tool_used
+    tool: Agent
+    input_match: '"subagent_type"\s*:\s*"(?:[\w-]+:)?pb-ux-reviewer"'
+    weight: 2
+  - name: u1-labels
+    type: regex
+    pattern: 'label'
+    flags: i
+  - name: u2-contrast
+    type: regex
+    pattern: 'contrast'
+    flags: i
+  - name: u3-div-button
+    type: regex
+    pattern: 'div'
+    flags: i
+  - name: u4-focus-visible
+    type: regex
+    pattern: 'focus'
+    flags: i
+  - name: u5-color-only
+    type: regex
+    pattern: 'colou?r only|1\.4\.1'
+    flags: i
+  - name: u6-reset-wipes-input
+    type: regex
+    pattern: 'reset'
+    flags: i
+  - name: u7-timer
+    type: regex
+    pattern: 'timer|aria-live'
+    flags: i
+  - name: u8-zoom
+    type: regex
+    pattern: 'user-scalable'
+    flags: i
+  - name: u9-alt
+    type: regex
+    pattern: 'alt'
+    flags: i
+  - name: u10-vnd-format
+    type: regex
+    pattern: '₫|VND'
+    flags: i
+  - name: u11-tel-input
+    type: regex
+    pattern: 'tel'
+    flags: i
+  - name: u12-dialog
+    type: regex
+    pattern: 'dialog'
+    flags: i

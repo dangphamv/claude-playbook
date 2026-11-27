@@ -1,0 +1,57 @@
+schema_version: "1.1"
+name: qa-engineer-1
+description: pb-qa-engineer finds the seeded defects in its fixture
+tags: [pb-qa-engineer]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 900
+  allowed_tools: [Agent, Read, Glob, Grep]
+graders:
+  - name: delegated-to-pb-qa-engineer
+    type: tool_used
+    tool: Agent
+    input_match: '"subagent_type"\s*:\s*"(?:[\w-]+:)?pb-qa-engineer"'
+    weight: 2
+  - name: q1-boundaries
+    type: regex
+    pattern: 'boundar'
+    flags: i
+  - name: q2-time-zone
+    type: regex
+    pattern: 'time ?zone|Asia/Ho_Chi_Minh|UTC'
+    flags: i
+  - name: q3-concurrency
+    type: regex
+    pattern: 'concurren|parallel'
+    flags: i
+  - name: q4-one-per-user
+    type: regex
+    pattern: 'per user|same user'
+    flags: i
+  - name: q5-rounding-never-negative
+    type: regex
+    pattern: 'round|negative'
+    flags: i
+  - name: q6-invalid-percent
+    type: regex
+    pattern: '101|percent_off'
+    flags: i
+  - name: q7-normalisation
+    type: regex
+    pattern: 'case|whitespace'
+    flags: i
+  - name: q8-permissions
+    type: regex
+    pattern: 'anonymous|IDOR|guest'
+    flags: i
+  - name: q9-release-on-cancel
+    type: regex
+    pattern: 'cancel|release'
+    flags: i
+  - name: q10-stacking
+    type: regex
+    pattern: 'stack|second coupon|multiple'
+    flags: i

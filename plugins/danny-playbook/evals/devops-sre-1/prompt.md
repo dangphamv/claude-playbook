@@ -1,0 +1,1 @@
+Review ops/Dockerfile, ops/.github/workflows/ci.yml and ops/docker-compose.yml. Delegate this to the pb-devops-sre subagent (its agent type may carry a plugin prefix, e.g. pb-eval:pb-devops-sre) and return its findings verbatim, without adding your own.

@@ -2,6 +2,7 @@
 name: pb-feature
 description: Phase 5 — implement ONE user story with strict TDD (failing test committed first), review, tick the story.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "<STORY-ID>"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`

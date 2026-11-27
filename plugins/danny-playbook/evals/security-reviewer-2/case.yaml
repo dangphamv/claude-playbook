@@ -1,0 +1,61 @@
+schema_version: "1.1"
+name: security-reviewer-2
+description: pb-security-reviewer finds the seeded defects in its fixture
+tags: [pb-security-reviewer]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 900
+  allowed_tools: [Agent, Read, Glob, Grep]
+graders:
+  - name: delegated-to-pb-security-reviewer
+    type: tool_used
+    tool: Agent
+    input_match: '"subagent_type"\s*:\s*"(?:[\w-]+:)?pb-security-reviewer"'
+    weight: 2
+  - name: x1-cors
+    type: regex
+    pattern: 'CORS|Allow-Origin'
+    flags: i
+  - name: x2-prototype-pollution
+    type: regex
+    pattern: 'prototype'
+    flags: i
+  - name: x3-path-traversal
+    type: regex
+    pattern: 'traversal'
+    flags: i
+  - name: x4-open-redirect
+    type: regex
+    pattern: 'open redirect'
+    flags: i
+  - name: x5-redos
+    type: regex
+    pattern: 'ReDoS'
+    flags: i
+  - name: x6-math-random
+    type: regex
+    pattern: 'Math.random'
+    flags: i
+  - name: x7-token-expiry-single-use
+    type: regex
+    pattern: 'expir|single.use'
+    flags: i
+  - name: x8-prompt-injection
+    type: regex
+    pattern: 'prompt injection'
+    flags: i
+  - name: x9-xss
+    type: regex
+    pattern: 'XSS'
+    flags: i
+  - name: x10-missing-auth
+    type: regex
+    pattern: 'req.user|authenticat'
+    flags: i
+  - name: x11-timing-enumeration
+    type: regex
+    pattern: 'timing|enumerat'
+    flags: i

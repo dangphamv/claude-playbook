@@ -91,23 +91,30 @@ Remove everything the kit created: `/danny-playbook:remove`. Pull newer kit file
 ### Third-party skills (vendored, pinned)
 Installed with the kit and preloaded into the agents that use them (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)):
 `ui-ux-pro-max` + `frontend-design` → pb-ux-reviewer, /pb-ux · `test-driven-development` + `webapp-testing` → pb-qa-engineer, /pb-feature · `supabase-postgres-best-practices` → pb-db-reviewer · `writing-plans` → pb-architect · `systematic-debugging` → /pb-hotfix · `verification-before-completion` → /pb-feature · `brainstorming` (reference only, so it cannot hijack checkpoints) → /pb-product.
-Refresh: bump a `sha` in `vendor/skills.lock.json`, run `scripts/vendor-skills.sh`, then `evals/run.sh`.
+Refresh: bump a `sha` in `vendor/skills.lock.json`, run `scripts/vendor-skills.sh`, then `plugins/danny-playbook/scripts/run-evals.sh`.
 Not vendored (license): Trail of Bits security skills (CC-BY-SA) and Vercel web-design-guidelines (no license) — /danny-playbook:init offers to install them from source.
 
 Every reviewer returns `[severity] file:line — problem — failure/exploit scenario — fix`, skips style, and ends with **Not verified**.
 
 ### Evals
-`evals/run.sh [agent]` runs each agent against fixtures with seeded defects (`evals/fixtures`, answer key in `evals/cases.json`) and scores the findings (~$2-3 per full run). Run it after editing an agent.
+Built on Claude Code's official `claude plugin eval`. Cases live in `plugins/danny-playbook/evals/<case>/` (`case.yaml` + `prompt.md`): each one scaffolds a repo with seeded defects, installs the kit, asks for a review by one agent, and grades with one `tool_used` grader (the right agent was delegated to) plus one `regex` grader per planted defect.
+Run `plugins/danny-playbook/scripts/run-evals.sh` (or `--case db-reviewer-1`); it wraps the agent templates in a throwaway plugin because eval sandboxes only load the plugin under test. About $1.50 for the full suite; an HTML report lands in `evals/results/`.
 
-| Agent | Seeded defects found (27/11/2026) |
-|---|---|
-| pb-db-reviewer | 21/21 (incl. deadlock lock order, `NOT IN` + NULL, float money, FK without index) |
-| pb-security-reviewer | 22/22 (incl. LLM prompt injection with a refund tool, ReDoS, prototype pollution, `Math.random` reset tokens) |
-| pb-ux-reviewer | 12/12 |
-| pb-devops-sre | 13/13 (incl. `pull_request_target` pwn request, script injection) |
-| pb-qa-engineer | 10/10 coverage categories |
+| Case | Defects | Score (27/11/2026) |
+|---|---|---|
+| db-reviewer-1 / -2 | 11 + 10 (incl. deadlock lock order, `NOT IN` + NULL, float money, FK without index) | 1.00 / 1.00 |
+| security-reviewer-1 / -2 | 11 + 11 (incl. LLM prompt injection with a refund tool, ReDoS, prototype pollution, `Math.random` reset tokens) | 1.00 / 1.00 |
+| ux-reviewer-1 | 12 | 1.00 |
+| devops-sre-1 | 13 (incl. `pull_request_target` pwn request, script injection) | 1.00 |
+| qa-engineer-1 | 10 coverage categories | 1.00 |
 
 PM and architect output is judged qualitatively (not keyword-scorable).
+
+## Worktrees
+Kit files are untracked, so `init` also writes a `.worktreeinclude` block: Claude Code copies `CLAUDE.local.md`, settings, config, hooks and rules into the worktrees it creates (`claude -w`, subagent `isolation: worktree`). Agents and skills are read through from the main checkout automatically.
+
+## Keeping it healthy
+`claude plugin validate . --strict`, `plugins/danny-playbook/scripts/check-skills.sh` (every `!` context command exits 0), `run-evals.sh` after editing an agent; in a project, `/doctor` and `/skill-doctor` show context cost and unused skills.
 
 ## Why it is built this way
 - **Plugins cannot ship CLAUDE.md, rules or permissions**, so `init` installs them into the project from templates.

@@ -1,0 +1,1 @@
+Produce the test matrix for story CPN-01 in docs/stories.md. Do not write files. Delegate this to the pb-qa-engineer subagent (its agent type may carry a plugin prefix, e.g. pb-eval:pb-qa-engineer) and return its findings verbatim, without adding your own.

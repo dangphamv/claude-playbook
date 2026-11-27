@@ -1,0 +1,57 @@
+schema_version: "1.1"
+name: db-reviewer-2
+description: pb-db-reviewer finds the seeded defects in its fixture
+tags: [pb-db-reviewer]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 900
+  allowed_tools: [Agent, Read, Glob, Grep]
+graders:
+  - name: delegated-to-pb-db-reviewer
+    type: tool_used
+    tool: Agent
+    input_match: '"subagent_type"\s*:\s*"(?:[\w-]+:)?pb-db-reviewer"'
+    weight: 2
+  - name: h1-deadlock-lock-order
+    type: regex
+    pattern: 'deadlock'
+    flags: i
+  - name: h2-http-inside-tx
+    type: regex
+    pattern: 'HTTP|fraud'
+    flags: i
+  - name: h3-float-money
+    type: regex
+    pattern: 'double precision|float'
+    flags: i
+  - name: h4-timestamptz
+    type: regex
+    pattern: 'timestamptz'
+    flags: i
+  - name: h5-not-in-null
+    type: regex
+    pattern: 'NOT EXISTS'
+    flags: i
+  - name: h6-keyset-pagination
+    type: regex
+    pattern: 'keyset'
+    flags: i
+  - name: h7-fk-index
+    type: regex
+    pattern: 'index.*wallet_id|wallet_id.*index'
+    flags: i
+  - name: h8-cascade-on-ledger
+    type: regex
+    pattern: 'CASCADE'
+    flags: i
+  - name: h9-batch-delete
+    type: regex
+    pattern: 'batch'
+    flags: i
+  - name: h10-atomic-balance-check
+    type: regex
+    pattern: 'balance >= |CHECK \(balance'
+    flags: i

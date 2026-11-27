@@ -1,6 +1,6 @@
 {
   "name": "danny-playbook",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Sets up a project for the 8-phase Claude Code playbook (product \u2192 BA \u2192 UX \u2192 architecture \u2192 build \u2192 QA \u2192 release \u2192 operate) with agents, skills, hooks and rules kept out of git.",
   "author": {
     "name": "Danny Pham"
@@ -15,5 +15,8 @@
     "playbook",
     "scaffold"
   ],
-  "homepage": "https://github.com/dangphamv/claude-playbook#readme"
+  "homepage": "https://github.com/dangphamv/claude-playbook#readme",
+  "engines": {
+    "claude-code": ">=2.1.323"
+  }
 }

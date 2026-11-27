@@ -1,0 +1,1 @@
+Review src/api.ts. Delegate this to the pb-security-reviewer subagent (its agent type may carry a plugin prefix, e.g. pb-eval:pb-security-reviewer) and return its findings verbatim, without adding your own.

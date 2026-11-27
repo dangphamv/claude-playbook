@@ -2,6 +2,7 @@
 name: pb-product
 description: Phase 1 — turn an idea into a PRD through structured questions. Plan-only; no code.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "<idea or feature in one sentence>"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`

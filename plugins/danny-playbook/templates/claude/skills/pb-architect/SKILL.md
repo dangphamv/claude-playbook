@@ -2,6 +2,7 @@
 name: pb-architect
 description: Phase 4 — ADRs for each significant decision (2-3 options, trade-offs) and a dependency-ordered plan; nothing is built until the user approves.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "[decision or area]"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`

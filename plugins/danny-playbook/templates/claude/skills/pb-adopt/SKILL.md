@@ -2,6 +2,7 @@
 name: pb-adopt
 description: Phase 0 for an existing codebase (brownfield) — map architecture, data flow and danger zones before changing anything, then fill CLAUDE.local.md.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "[area to focus on]"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`

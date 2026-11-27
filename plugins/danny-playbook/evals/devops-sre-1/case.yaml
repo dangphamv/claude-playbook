@@ -1,0 +1,69 @@
+schema_version: "1.1"
+name: devops-sre-1
+description: pb-devops-sre finds the seeded defects in its fixture
+tags: [pb-devops-sre]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 900
+  allowed_tools: [Agent, Read, Glob, Grep]
+graders:
+  - name: delegated-to-pb-devops-sre
+    type: tool_used
+    tool: Agent
+    input_match: '"subagent_type"\s*:\s*"(?:[\w-]+:)?pb-devops-sre"'
+    weight: 2
+  - name: o1-pin-base-image
+    type: regex
+    pattern: 'latest'
+    flags: i
+  - name: o2-secret-in-image
+    type: regex
+    pattern: 'NPM_TOKEN'
+    flags: i
+  - name: o3-layer-order-dockerignore
+    type: regex
+    pattern: 'dockerignore'
+    flags: i
+  - name: o4-npm-ci
+    type: regex
+    pattern: 'npm ci'
+    flags: i
+  - name: o5-root-user
+    type: regex
+    pattern: 'root|USER'
+    flags: i
+  - name: o6-healthcheck-sigterm
+    type: regex
+    pattern: 'HEALTHCHECK|SIGTERM'
+    flags: i
+  - name: o7-pwn-request
+    type: regex
+    pattern: 'pull_request_target'
+    flags: i
+  - name: o8-script-injection
+    type: regex
+    pattern: 'injection|interpolat|pull_request\.title'
+    flags: i
+  - name: o9-permissions-pin-actions
+    type: regex
+    pattern: 'write-all|SHA'
+    flags: i
+  - name: o10-curl-bash
+    type: regex
+    pattern: 'curl'
+    flags: i
+  - name: o11-test-gate-sha-tag
+    type: regex
+    pattern: 'needs|SHA'
+    flags: i
+  - name: o12-oidc
+    type: regex
+    pattern: 'OIDC'
+    flags: i
+  - name: o13-db-exposed
+    type: regex
+    pattern: '5432'
+    flags: i

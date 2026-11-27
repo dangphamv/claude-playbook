@@ -2,6 +2,7 @@
 name: pb-qa
 description: Phase 6 — verify, don't trust: test matrix, E2E, security and code review, non-functional checks; user decides what to fix.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "[scope: branch, story IDs, or release]"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`

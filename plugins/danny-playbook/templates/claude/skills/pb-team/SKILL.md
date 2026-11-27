@@ -2,6 +2,7 @@
 name: pb-team
 description: Run work as an agent team — the Owner leads, pb-* specialists are teammates who message each other directly and share a task list. For cross-checking designs, parallel reviews, and debates; costs more tokens than subagents.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "<goal for the team>"
 ---
 Goal: $ARGUMENTS

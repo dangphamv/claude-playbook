@@ -2,6 +2,7 @@
 name: pb-retro
 description: Turn a repeated mistake or postmortem into a permanent guard — a line in CLAUDE.local.md, a path rule, a hook, or a test.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "<what went wrong>"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`

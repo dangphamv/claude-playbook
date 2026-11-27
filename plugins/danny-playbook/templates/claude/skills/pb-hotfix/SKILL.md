@@ -2,6 +2,7 @@
 name: pb-hotfix
 description: Production incident — rollback first if users are hurt, reproduce with a failing test on a hotfix branch from the deployed tag, minimal fix, deploy with approval, postmortem.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "<symptom, error, or trace>"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`

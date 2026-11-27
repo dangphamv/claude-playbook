@@ -1,0 +1,61 @@
+schema_version: "1.1"
+name: db-reviewer-1
+description: pb-db-reviewer finds the seeded defects in its fixture
+tags: [pb-db-reviewer]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 900
+  allowed_tools: [Agent, Read, Glob, Grep]
+graders:
+  - name: delegated-to-pb-db-reviewer
+    type: tool_used
+    tool: Agent
+    input_match: '"subagent_type"\s*:\s*"(?:[\w-]+:)?pb-db-reviewer"'
+    weight: 2
+  - name: d1-not-null-without-default
+    type: regex
+    pattern: 'NOT NULL'
+    flags: i
+  - name: d2-index-concurrently
+    type: regex
+    pattern: 'CONCURRENTLY'
+    flags: i
+  - name: d3-fk-not-valid
+    type: regex
+    pattern: 'NOT VALID'
+    flags: i
+  - name: d4-type-change-rewrite
+    type: regex
+    pattern: 'rewrite'
+    flags: i
+  - name: d5-batch-the-mass-update
+    type: regex
+    pattern: 'batch'
+    flags: i
+  - name: d6-lost-update-race
+    type: regex
+    pattern: 'race|lost update|check-then-act|over-?redeem|oversell|atomic'
+    flags: i
+  - name: d7-lock-timeout
+    type: regex
+    pattern: 'lock_timeout'
+    flags: i
+  - name: d8-unique-key-fk-index
+    type: regex
+    pattern: 'unique|index on .*coupon_code|coupon_code.*index'
+    flags: i
+  - name: d9-n-1
+    type: regex
+    pattern: 'N\+1'
+    flags: i
+  - name: d10-select
+    type: regex
+    pattern: 'select \*'
+    flags: i
+  - name: d11-transaction
+    type: regex
+    pattern: 'transaction'
+    flags: i

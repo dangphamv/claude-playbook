@@ -2,6 +2,7 @@
 name: pb-status
 description: Show where this project is in the playbook (phase, open stories, last decisions) and the one recommended next command.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 ---
 Config: !`.claude/playbook/bin/pb-context config`
 Docs present: !`.claude/playbook/bin/pb-context docs`

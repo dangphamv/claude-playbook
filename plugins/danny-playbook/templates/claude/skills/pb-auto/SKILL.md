@@ -2,6 +2,7 @@
 name: pb-auto
 description: Run the playbook end to end in auto mode — move through phases and delegate to the right agents without stopping at decision checkpoints, logging every auto-decision; still stops before any outward or irreversible action.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "[goal or feature] [--until <phase>]"
 ---
 Goal: $ARGUMENTS

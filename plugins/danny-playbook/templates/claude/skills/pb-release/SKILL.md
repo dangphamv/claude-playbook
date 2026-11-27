@@ -2,6 +2,7 @@
 name: pb-release
 description: Phase 7 — production checklist, PR to merge, build-once images/artifacts, deploy with explicit approval, smoke test, tag, runbook.
 disable-model-invocation: true
+allowed-tools: Bash(.claude/playbook/bin/*)
 argument-hint: "[version]"
 ---
 Mode: !`.claude/playbook/bin/pb-context mode`
