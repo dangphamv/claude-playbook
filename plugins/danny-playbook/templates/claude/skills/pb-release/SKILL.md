@@ -11,7 +11,7 @@ CI: !`gh run list -L 3 2>/dev/null || echo "(gh not available)"`
 
 Every outward action (push, PR, merge, deploy, migration, tag, release) needs an explicit yes from the user in this session.
 
-1. Production checklist — report pass/fail for each: environments & env vars complete (.env.example vs platform), secrets only in secret stores (run gitleaks if available), backups + one tested restore, error tracking/logs/uptime alerts, rollback path known, security review on the release diff + dependency audit, legal pages if user data, SEO/meta if public web.
+1. Ask the pb-devops-sre subagent to review Dockerfiles, CI/CD workflows, compose/IaC and the deploy/rollback plan; include its findings. Production checklist — report pass/fail for each: environments & env vars complete (.env.example vs platform), secrets only in secret stores (run gitleaks if available), backups + one tested restore, error tracking/logs/uptime alerts, rollback path known, security review on the release diff + dependency audit, legal pages if user data, SEO/meta if public web.
 2. CHECKPOINT 1 — show the checklist and the release notes (grouped feat/fix since last tag). AskUserQuestion: proceed / fix first. STOP until answered.
 3. PR: push the branch and open a PR (suggest `/ship` to babysit CI and review comments). Merging is the user's call.
 4. Deploy: prefer build-once artifacts (image tagged by commit SHA, promoted across environments). CHECKPOINT 2 — before migrating or deploying production, state exactly what will run where; STOP until the user says yes.

@@ -40,7 +40,7 @@ Every checkpoint appends a row to `playbook-log.md` (decision · why · evidence
 ## What gets installed in a project
 | Path | Purpose |
 |---|---|
-| `.claude/agents/pb-*.md` | product-manager, architect, db-reviewer, qa-engineer, security-reviewer |
+| `.claude/agents/pb-*.md` | 7 specialists, see below |
 | `.claude/skills/pb-*/` | the phase skills above |
 | `.claude/hooks/danny-playbook-*.sh` | block `.env` reads; run your format command after edits; typecheck before Claude stops; session status |
 | `.claude/rules/*.md` | path-scoped rules for your stack (created at init) |
@@ -50,6 +50,32 @@ Every checkpoint appends a row to `playbook-log.md` (decision · why · evidence
 | `.claude/playbook/templates/` | PRD, stories, ADR, plan, test plan, runbook, log templates |
 
 Remove everything the kit created: `/danny-playbook:remove`. Pull newer kit files: `/danny-playbook:update`.
+
+## Agents
+| Agent | Model | Role | Built on |
+|---|---|---|---|
+| `pb-product-manager` | opus | Frame ideas, PRD, scope, metrics, story review | JTBD, four product risks (value/usability/feasibility/viability), outcome + guardrail metrics, pre-mortem, VN regulatory flags marked **[verify]** |
+| `pb-architect` | opus | Options, ADRs, capacity estimates, plans | back-of-envelope numbers, failure modes, reversibility, fitness-function tests |
+| `pb-db-reviewer` | sonnet, read-only | Migrations & queries | Postgres lock levels, expand→contract, races/deadlocks, integrity (money, time zones), indexing, rollback |
+| `pb-qa-engineer` | sonnet | Test matrix, failing tests first, E2E/load | risk-based testing, boundary/decision-table/state-transition/property-based, determinism |
+| `pb-security-reviewer` | sonnet, read-only | Threat model & diff review | OWASP Top 10, API Top 10 2023, LLM Top 10, ASVS; source→sink evidence |
+| `pb-ux-reviewer` | sonnet, read-only | Screens & prototypes | WCAG 2.2 AA, Nielsen heuristics, VN locale (VND, dates, diacritics), mobile |
+| `pb-devops-sre` | sonnet, read-only | Docker, CI/CD, IaC, release readiness | CI supply-chain security, build-once images, safe deploy/rollback, SLO-based ops |
+
+Every reviewer returns `[severity] file:line — problem — failure/exploit scenario — fix`, skips style, and ends with **Not verified**.
+
+### Evals
+`evals/run.sh [agent]` runs each agent against fixtures with seeded defects (`evals/fixtures`, answer key in `evals/cases.json`) and scores the findings (~$2-3 per full run). Run it after editing an agent.
+
+| Agent | Seeded defects found (27/11/2026) |
+|---|---|
+| pb-db-reviewer | 21/21 (incl. deadlock lock order, `NOT IN` + NULL, float money, FK without index) |
+| pb-security-reviewer | 22/22 (incl. LLM prompt injection with a refund tool, ReDoS, prototype pollution, `Math.random` reset tokens) |
+| pb-ux-reviewer | 12/12 |
+| pb-devops-sre | 13/13 (incl. `pull_request_target` pwn request, script injection) |
+| pb-qa-engineer | 10/10 coverage categories |
+
+PM and architect output is judged qualitatively (not keyword-scorable).
 
 ## Why it is built this way
 - **Plugins cannot ship CLAUDE.md, rules or permissions**, so `init` installs them into the project from templates.

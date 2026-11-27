@@ -1,0 +1,125 @@
+{
+  "pb-db-reviewer": [
+    {
+      "prompt": "Review migrations/002_orders.sql and src/coupons.ts.",
+      "checks": {
+        "D1 NOT NULL without default": "NOT NULL",
+        "D2 index CONCURRENTLY": "CONCURRENTLY",
+        "D3 FK NOT VALID": "NOT VALID",
+        "D4 type change rewrite": "rewrite",
+        "D5 batch the mass UPDATE": "batch",
+        "D6 lost-update race": "race|lost update|check-then-act|over-?redeem|oversell|atomic",
+        "D7 lock_timeout": "lock_timeout",
+        "D8 unique key / FK index": "unique|index on .*coupon_code|coupon_code.*index",
+        "D9 N\\+1": "N\\+1",
+        "D10 select \\*": "select \\*",
+        "D11 transaction": "transaction"
+      }
+    },
+    {
+      "prompt": "Review hard/transfer.sql.",
+      "checks": {
+        "H1 deadlock lock order": "deadlock",
+        "H2 HTTP inside tx": "HTTP|fraud",
+        "H3 float money": "double precision|float",
+        "H4 timestamptz": "timestamptz",
+        "H5 NOT IN null": "NOT EXISTS",
+        "H6 keyset pagination": "keyset",
+        "H7 FK index": "index.*wallet_id|wallet_id.*index",
+        "H8 cascade on ledger": "CASCADE",
+        "H9 batch delete": "batch",
+        "H10 atomic balance check": "balance >= |CHECK \\(balance"
+      }
+    }
+  ],
+  "pb-security-reviewer": [
+    {
+      "prompt": "Review src/api.ts.",
+      "checks": {
+        "S1 SQL injection": "SQL injection|injection",
+        "S2 IDOR/BOLA": "IDOR|BOLA|ownership",
+        "S3 mass assignment": "mass assignment",
+        "S4 SSRF": "SSRF",
+        "S5 alg none": "none",
+        "S6 fallback secret": "dev-secret|fallback",
+        "S7 password in logs": "log",
+        "S8 enumeration": "enumerat",
+        "S9 timing-safe / raw body": "timingSafeEqual|constant-time|raw",
+        "S10 replay/idempotency": "replay|idempot",
+        "S11 rate limit": "rate limit|rate-limit"
+      }
+    },
+    {
+      "prompt": "Review hard/server.ts.",
+      "checks": {
+        "X1 CORS": "CORS|Allow-Origin",
+        "X2 prototype pollution": "prototype",
+        "X3 path traversal": "traversal",
+        "X4 open redirect": "open redirect",
+        "X5 ReDoS": "ReDoS",
+        "X6 Math.random": "Math.random",
+        "X7 token expiry/single use": "expir|single.use",
+        "X8 prompt injection": "prompt injection",
+        "X9 XSS": "XSS",
+        "X10 missing auth": "req.user|authenticat",
+        "X11 timing/enumeration": "timing|enumerat"
+      }
+    }
+  ],
+  "pb-ux-reviewer": [
+    {
+      "prompt": "Review ux/checkout.html.",
+      "checks": {
+        "U1 labels": "label",
+        "U2 contrast": "contrast",
+        "U3 div button": "div",
+        "U4 focus visible": "focus",
+        "U5 color only": "colou?r only|1\\.4\\.1",
+        "U6 reset wipes input": "reset",
+        "U7 timer": "timer|aria-live",
+        "U8 zoom": "user-scalable",
+        "U9 alt": "alt",
+        "U10 VND format": "₫|VND",
+        "U11 tel input": "tel",
+        "U12 dialog": "dialog"
+      }
+    }
+  ],
+  "pb-devops-sre": [
+    {
+      "prompt": "Review ops/Dockerfile, ops/.github/workflows/ci.yml and ops/docker-compose.yml.",
+      "checks": {
+        "O1 pin base image": "latest",
+        "O2 secret in image": "NPM_TOKEN",
+        "O3 layer order/.dockerignore": "dockerignore",
+        "O4 npm ci": "npm ci",
+        "O5 root user": "root|USER",
+        "O6 healthcheck/SIGTERM": "HEALTHCHECK|SIGTERM",
+        "O7 pwn request": "pull_request_target",
+        "O8 script injection": "injection|interpolat|pull_request\\.title",
+        "O9 permissions/pin actions": "write-all|SHA",
+        "O10 curl bash": "curl",
+        "O11 test gate/SHA tag": "needs|SHA",
+        "O12 OIDC": "OIDC",
+        "O13 db exposed": "5432"
+      }
+    }
+  ],
+  "pb-qa-engineer": [
+    {
+      "prompt": "Produce the test matrix for story CPN-01 in docs/stories.md. Do not write files.",
+      "checks": {
+        "Q1 boundaries": "boundar",
+        "Q2 time zone": "time ?zone|Asia/Ho_Chi_Minh|UTC",
+        "Q3 concurrency": "concurren|parallel",
+        "Q4 one per user": "per user|same user",
+        "Q5 rounding/never negative": "round|negative",
+        "Q6 invalid percent": "101|percent_off",
+        "Q7 normalisation": "case|whitespace",
+        "Q8 permissions": "anonymous|IDOR|guest",
+        "Q9 release on cancel": "cancel|release",
+        "Q10 stacking": "stack|second coupon|multiple"
+      }
+    }
+  ]
+}

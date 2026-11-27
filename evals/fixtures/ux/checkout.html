@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="vi"><head><meta name="viewport" content="width=device-width, user-scalable=no">
+<style>
+  body{font-family:sans-serif;color:#999;background:#fff}
+  *:focus{outline:none}
+  .err{color:red}
+  .pay{display:inline-block;padding:4px 8px;font-size:12px;background:#ff3d7f;color:#fff;cursor:pointer}
+</style></head>
+<body>
+<h3>Thanh toan</h3>
+<img src="/qr.png">
+<p>Giữ chỗ còn: <span id="timer">09:59</span></p>
+<form id="f">
+  <input id="name" placeholder="Họ tên">
+  <input id="phone" type="text" placeholder="Số điện thoại">
+  <input id="email" placeholder="Email">
+  <select id="qty"><option>1</option><option>2</option></select>
+  <p>Tổng: <b id="total">3500000.00đ</b></p>
+  <div class="pay" onclick="submitForm()">Thanh toán</div>
+  <p id="msg"></p>
+</form>
+<div id="modal" style="display:none"><p>Bạn có chắc muốn huỷ đơn?</p><span onclick="cancelOrder()">Huỷ đơn</span></div>
+<script>
+let s=599; setInterval(()=>{s--; timer.textContent=Math.floor(s/60)+":"+(s%60); if(s<=0){location.href="/"}},1000);
+function submitForm(){
+  if(!/^0\d{9}$/.test(phone.value)){ document.getElementById("f").reset(); phone.style.borderColor="red"; return; }
+  msg.textContent="Đã gửi"; msg.className="";
+}
+</script>
+</body></html>
