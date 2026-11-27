@@ -21,10 +21,11 @@ You are installing a local, uncommitted toolkit. Follow the steps in order and s
    - Docs (PRD, ADR, stories, log): "tracked" — committed under docs/ (your own project) — or "private" — kept in .playbook/docs and excluded from git (someone else's / team repo).
    - Confirm the detected commands (show them; offer "edit"). For greenfield, say they stay empty until scaffolding.
    - Project type confirmation: new product / feature work on an existing codebase.
+   - Owner: make `pb-owner` the default main agent for this project (you talk only to the Owner, who delegates to the specialists) — recommended — or keep the normal Claude Code session (the Owner is still available via `claude --agent pb-owner`).
    - Mode: "guided" — stop and ask at every phase checkpoint (best for learning or important decisions) — or "auto" — pick recommended options, log them, chain phases with /pb-auto; outward or irreversible actions still ask.
    STOP until answered.
 5. Run: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/install-kit.sh" "$PWD" --docs <tracked|private>` and show its output. If it prints a WARNING about files not excluded, stop and report.
-6. Write the confirmed commands into `.claude/playbook.json` (`commands.*`) and the chosen `mode`, using jq.
+6. Write the confirmed commands and the chosen mode with `.claude/playbook/bin/pb-config set ...`; if the user chose the Owner, run `.claude/playbook/bin/pb-config owner on`.
 7. Fill CLAUDE.local.md "Stack" and "Commands" sections with what you detected (short, factual). If a committed CLAUDE.md or AGENTS.md exists, do not edit it; CLAUDE.local.md complements it.
 8. Create 1-3 path rules in `.claude/rules/` that fit this stack (e.g. api.md for the backend folder, db.md for migrations), each under 10 lines, then add their paths to `.claude/playbook.manifest` and re-run step 5's script (it is idempotent and refreshes the git exclude block).
 9. Optional skills that cannot ship in the kit (license). AskUserQuestion (multi-select, skippable): Trail of Bits security skills for pb-security-reviewer / pb-devops-sre (`claude plugin marketplace add trailofbits/skills`, then install `differential-review`, `insecure-defaults`, `supply-chain-risk-auditor`, `agentic-actions-auditor` from marketplace `trailofbits` at project scope); Vercel web-design-guidelines for pb-ux-reviewer (show the user `https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines` and let them install it — no license, so do not copy it yourself). Run only what the user selects; agents work without them.

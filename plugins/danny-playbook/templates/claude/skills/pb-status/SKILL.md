@@ -20,6 +20,7 @@ Phases and the file that proves each one is done:
 | 6 | /pb-qa | test-plan.md updated, review findings resolved |
 | 7 | /pb-release | PR merged, tag/release, runbook.md |
 | 8 | /pb-operate | routine/monitoring set up |
+| owner/team | `claude --agent pb-owner`, /pb-team <goal> | Owner delegates; team mode lets specialists message each other |
 | auto | /pb-auto [goal] [--until <phase>], /pb-mode guided\|auto | chains phases, logs auto-decisions |
 | maint | /pb-hotfix, /pb-retro | postmortem / CLAUDE.local.md or hook updated |
 

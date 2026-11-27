@@ -2,11 +2,27 @@
 # Read/write .claude/playbook.json without the Edit tool (Claude Code protects .claude/ edits; this path is allow-listed).
 #   pb-config get [jq-path]            e.g. pb-config get .mode
 #   pb-config set <key.path> <value>   e.g. pb-config set mode auto | set phase 2-ba | set commands.test "pnpm test" | set auto.stopBefore 8-operate
+#   pb-config owner on|off             make pb-owner the default main agent for this project (settings.local.json "agent")
+#   pb-config teams on|off             enable/disable experimental agent teams (settings.local.json env); restart Claude Code after
 set -euo pipefail
 root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cfg="$root/.claude/playbook.json"
 [ -f "$cfg" ] || { echo "no $cfg — run /danny-playbook:init" >&2; exit 1; }
+sl="$root/.claude/settings.local.json"
+[ -f "$sl" ] || echo '{}' > "$sl"
 case "${1:-get}" in
+  owner)
+    case "${2:-}" in
+      on)  jq '.agent = "pb-owner"' "$sl" ;;
+      off) jq 'del(.agent)' "$sl" ;;
+      *) echo "usage: pb-config owner on|off" >&2; exit 64 ;;
+    esac > "$sl.tmp" && mv "$sl.tmp" "$sl"; echo "owner: ${2} (restart Claude Code; or run: claude --agent pb-owner)" ;;
+  teams)
+    case "${2:-}" in
+      on)  jq '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1"' "$sl" ;;
+      off) jq '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "0"' "$sl" ;;
+      *) echo "usage: pb-config teams on|off" >&2; exit 64 ;;
+    esac > "$sl.tmp" && mv "$sl.tmp" "$sl"; echo "agent teams: ${2} (restart Claude Code to apply)" ;;
   get) jq "${2:-.}" "$cfg" ;;
   set)
     key="${2:?key}"; val="${3-}"
@@ -19,5 +35,5 @@ case "${1:-get}" in
     path=".$(echo "$key" | sed 's/\./"."/g; s/^/"/; s/$/"/')"
     if [[ "$val" =~ ^[0-9]+$ ]]; then jq "$path = $val" "$cfg"; else jq --arg v "$val" "$path = \$v" "$cfg"; fi > "$cfg.tmp" && mv "$cfg.tmp" "$cfg"
     jq -c "$path" "$cfg" ;;
-  *) echo "usage: pb-config get [path] | set <key> <value>" >&2; exit 64 ;;
+  *) echo "usage: pb-config get [path] | set <key> <value> | owner on|off | teams on|off" >&2; exit 64 ;;
 esac

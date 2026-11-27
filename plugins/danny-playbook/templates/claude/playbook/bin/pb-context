@@ -17,6 +17,9 @@ case "${1:-config}" in
   ci)      gh run list -L 3 2>/dev/null || echo "(gh not available)" ;;
   skills)  ls .claude/skills 2>/dev/null | grep '^pb-' ;;
   rules)   ls .claude/rules 2>/dev/null; wc -l CLAUDE.local.md 2>/dev/null ;;
+  teams)   if [ "${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-}" = 1 ]; then echo on; else echo "off (settings: $(jq -r '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS // "unset"' .claude/settings.local.json 2>/dev/null); restart after enabling)"; fi ;;
+  owner)   echo "default main agent: $(jq -r '.agent // "none"' .claude/settings.local.json 2>/dev/null)" ;;
+  agents)  ls .claude/agents 2>/dev/null | sed 's/\.md$//' ;;
   *)       echo "unknown: $1" ;;
 esac
 exit 0

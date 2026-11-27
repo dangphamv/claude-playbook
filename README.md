@@ -50,6 +50,10 @@ cd my-project && claude
 | Maintenance | `/pb-hotfix`, `/pb-retro` | rollback, deploy, new guard | postmortem, rule/hook/test |
 | Auto | `/pb-auto [goal] [--until <phase>]`, `/pb-mode guided\|auto` | only outward/irreversible actions | all of the above, decisions logged as `auto:` |
 
+### Owner and agent teams
+- `claude --agent pb-owner` (or make it the project default at init / `pb-config owner on`): you talk only to the **Owner**, who plans, delegates to the specialists, passes findings between them (QA → architect → QA), verifies their output and reports back. It runs `/pb-status` on start.
+- `/pb-team <goal>`: the Owner becomes the lead of an **agent team** (Claude Code's experimental agent teams): pb-* specialists become teammates that message each other directly and share a task list. Best for debates and parallel reviews; costs more tokens, one team per session, no resume. Enable with `pb-config teams on` and restart.
+
 ### Guided vs auto
 - **guided** (default): every checkpoint asks you and stops. Best for learning the process or high-stakes decisions.
 - **auto**: `/pb-auto "<goal>"` moves through the phases by itself, delegates to the right agent at each step, picks the recommended option at each checkpoint and logs it (`auto:` rows in `playbook-log.md`). It stops before release by default (`auto.stopBefore`), and always stops for push/PR/deploy/production data/publishing/credentials, for conflicting requirements, and when a check still fails after 3 attempts. Re-run `/pb-auto` to resume from the log; revisit any auto-decision with the matching `/pb-*` skill in guided mode.
@@ -75,6 +79,7 @@ Remove everything the kit created: `/danny-playbook:remove`. Pull newer kit file
 ## Agents
 | Agent | Model | Role | Built on |
 |---|---|---|---|
+| `pb-owner` | session model | Single point of contact; delegates, reconciles, reports; team lead in /pb-team | runs as the main session (`--agent`), full safety rules in its prompt |
 | `pb-product-manager` | opus | Frame ideas, PRD, scope, metrics, story review | JTBD, four product risks (value/usability/feasibility/viability), outcome + guardrail metrics, pre-mortem, VN regulatory flags marked **[verify]** |
 | `pb-architect` | opus | Options, ADRs, capacity estimates, plans | back-of-envelope numbers, failure modes, reversibility, fitness-function tests |
 | `pb-db-reviewer` | sonnet, read-only | Migrations & queries | Postgres lock levels, expand→contract, races/deadlocks, integrity (money, time zones), indexing, rollback |
