@@ -5,7 +5,7 @@ disable-model-invocation: true
 argument-hint: "[epic or PRD section]"
 ---
 Scope: $ARGUMENTS
-Config: !`cat .claude/playbook.json`
+Config: !`cat .claude/playbook.json; true`
 
 1. Read `<docs.dir>/prd.md`. Draft `<docs.dir>/stories.md` from the template: epic → story (As a / I want / So that), IDs like AUTH-01, size S/M/L, dependencies, a `### [ ] ID` heading per story, AC as Given/When/Then.
 2. List business rules the PRD leaves open: concurrency (two users, same resource), cancellation/refund, deletion, permissions per role, time zones, money rounding, empty/error/loading/offline states.

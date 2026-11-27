@@ -6,11 +6,11 @@ argument-hint: "[one-line description of the project or the work ahead]"
 ---
 Work ahead: $ARGUMENTS
 Kit root: ${CLAUDE_PLUGIN_ROOT}
-Project: !`pwd`
-Git: !`git rev-parse --is-inside-work-tree 2>/dev/null && git log --oneline -3 2>/dev/null; git ls-files | wc -l | xargs echo "tracked files:"`
-Already set up: !`test -f .claude/playbook.json && cat .claude/playbook.json || echo "no"`
-Manifests: !`ls package.json pnpm-workspace.yaml turbo.json pyproject.toml requirements.txt go.mod Cargo.toml pom.xml build.gradle Makefile docker-compose.yml compose.yaml 2>/dev/null; ls .github/workflows 2>/dev/null`
-Existing Claude config: !`ls CLAUDE.md AGENTS.md .claude 2>/dev/null; ls .claude/agents .claude/skills 2>/dev/null`
+Project: !`pwd; true`
+Git: !`git rev-parse --is-inside-work-tree 2>/dev/null && git log --oneline -3 2>/dev/null; git ls-files | wc -l | xargs echo "tracked files:"; true`
+Already set up: !`test -f .claude/playbook.json && cat .claude/playbook.json || echo "no"; true`
+Manifests: !`ls package.json pnpm-workspace.yaml turbo.json pyproject.toml requirements.txt go.mod Cargo.toml pom.xml build.gradle Makefile docker-compose.yml compose.yaml 2>/dev/null; ls .github/workflows 2>/dev/null; true`
+Existing Claude config: !`ls CLAUDE.md AGENTS.md .claude 2>/dev/null; ls .claude/agents .claude/skills 2>/dev/null; true`
 
 You are installing a local, uncommitted toolkit. Follow the steps in order and stop at every CHECKPOINT.
 

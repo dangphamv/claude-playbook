@@ -5,8 +5,8 @@ disable-model-invocation: true
 argument-hint: "[decision or area]"
 ---
 Focus: $ARGUMENTS
-Config: !`cat .claude/playbook.json`
-Existing ADRs: !`d=$(jq -r .docs.dir .claude/playbook.json); ls "$d/adr" 2>/dev/null || echo "(none)"`
+Config: !`cat .claude/playbook.json; true`
+Existing ADRs: !`d=$(jq -r .docs.dir .claude/playbook.json); ls "$d/adr" 2>/dev/null || echo "(none)"; true`
 
 Tip for the user: `/model opusplan` and plan mode (Shift+Tab) fit this phase.
 

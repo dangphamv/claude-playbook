@@ -5,7 +5,7 @@ disable-model-invocation: true
 argument-hint: "<what went wrong>"
 ---
 Problem: $ARGUMENTS
-Current rules: !`ls .claude/rules 2>/dev/null; wc -l CLAUDE.local.md 2>/dev/null`
+Current rules: !`ls .claude/rules 2>/dev/null; wc -l CLAUDE.local.md 2>/dev/null; true`
 
 1. Name the failure precisely (what happened, what should have happened, how often).
 2. Choose the weakest guard that reliably works: test (behaviour) > hook or permission deny (must never happen) > path rule (applies to some files) > CLAUDE.local.md line (preference). Context files are advisory; anything mandatory must be a hook or permission.

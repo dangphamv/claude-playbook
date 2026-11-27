@@ -3,7 +3,7 @@ name: pb-operate
 description: Phase 8 — after release: monitoring, scheduled routines (dependency bumps, error triage, health checks), KPI dashboard, feedback loop back to the PRD.
 disable-model-invocation: true
 ---
-Config: !`cat .claude/playbook.json`
+Config: !`cat .claude/playbook.json; true`
 
 1. Propose an operations set and CHECKPOINT with AskUserQuestion (multi-select):
    - daily health + error triage (cloud routine via `/schedule`, opens an issue with analysis),

@@ -5,7 +5,7 @@ disable-model-invocation: true
 argument-hint: "[scope: branch, story IDs, or release]"
 ---
 Scope: $ARGUMENTS
-Config: !`cat .claude/playbook.json`
+Config: !`cat .claude/playbook.json; true`
 
 1. Ask pb-qa-engineer for a test matrix from the AC (happy/edge/negative/permission/concurrency/bad data) mapped to story IDs → `<docs.dir>/test-plan.md`. Note which rows already have automated tests.
 2. CHECKPOINT 1 — AskUserQuestion: which gaps to cover now, and which checks to run (E2E via Playwright MCP or Chrome, `/security-review`, `/code-review high`, load test with k6, Lighthouse/a11y, migration dry-run). STOP until answered.

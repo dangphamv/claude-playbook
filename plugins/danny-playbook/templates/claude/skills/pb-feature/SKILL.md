@@ -5,8 +5,8 @@ disable-model-invocation: true
 argument-hint: "<STORY-ID>"
 ---
 Story: $ARGUMENTS
-Config: !`cat .claude/playbook.json`
-Branch: !`git branch --show-current`
+Config: !`cat .claude/playbook.json; true`
+Branch: !`git branch --show-current; true`
 
 1. Read story $ARGUMENTS in `<docs.dir>/stories.md`, the related part of `<docs.dir>/api-contract.yaml`, relevant ADRs and plan task.
 2. If on the default branch, propose a branch `feat/<story-id-lowercase>`.

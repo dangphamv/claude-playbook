@@ -5,7 +5,7 @@ disable-model-invocation: true
 argument-hint: "<symptom, error, or trace>"
 ---
 Incident: $ARGUMENTS
-Deployed tag: !`git describe --tags --abbrev=0 2>/dev/null || echo "(no tags)"`
+Deployed tag: !`git describe --tags --abbrev=0 2>/dev/null || echo "(no tags)"; true`
 
 1. Triage: impact (who/how many), since when, last deploy. CHECKPOINT — if users are affected, recommend rollback to the previous release and ask; STOP until answered.
 2. Form hypotheses; add logging or queries to confirm. Do not fix yet.

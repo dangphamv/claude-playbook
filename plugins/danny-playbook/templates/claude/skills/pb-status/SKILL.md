@@ -3,10 +3,10 @@ name: pb-status
 description: Show where this project is in the playbook (phase, open stories, last decisions) and the one recommended next command.
 disable-model-invocation: true
 ---
-Config: !`cat .claude/playbook.json 2>/dev/null || echo "{}"`
-Docs present: !`d=$(jq -r '.docs.dir // "docs"' .claude/playbook.json 2>/dev/null); ls "$d" "$d/adr" 2>/dev/null | head -40`
-Recent log: !`d=$(jq -r '.docs.dir // "docs"' .claude/playbook.json 2>/dev/null); tail -8 "$d/playbook-log.md" 2>/dev/null || echo "(no log yet)"`
-Git: !`git log --oneline -5 2>/dev/null; git status --short 2>/dev/null | head -10`
+Config: !`cat .claude/playbook.json 2>/dev/null || echo "{}"; true`
+Docs present: !`d=$(jq -r '.docs.dir // "docs"' .claude/playbook.json 2>/dev/null); ls "$d" "$d/adr" 2>/dev/null | head -40; true`
+Recent log: !`d=$(jq -r '.docs.dir // "docs"' .claude/playbook.json 2>/dev/null); tail -8 "$d/playbook-log.md" 2>/dev/null || echo "(no log yet)"; true`
+Git: !`git log --oneline -5 2>/dev/null; git status --short 2>/dev/null | head -10; true`
 
 Phases and the file that proves each one is done:
 | # | Skill | Done when |

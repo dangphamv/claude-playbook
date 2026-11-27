@@ -5,7 +5,7 @@ disable-model-invocation: true
 argument-hint: "[flow or story IDs]"
 ---
 Scope: $ARGUMENTS
-Config: !`cat .claude/playbook.json`
+Config: !`cat .claude/playbook.json; true`
 
 1. Write user flows for the core stories as mermaid in `<docs.dir>/design/flows.md`, including error/empty/loading states.
 2. Propose 2-3 distinct visual directions (use the frontend-design / ui-ux-pro-max skills if available). CHECKPOINT 1 — AskUserQuestion with an ASCII preview per option. STOP until chosen.

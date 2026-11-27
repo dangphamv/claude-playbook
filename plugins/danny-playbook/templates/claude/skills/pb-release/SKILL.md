@@ -5,9 +5,9 @@ disable-model-invocation: true
 argument-hint: "[version]"
 ---
 Version: $ARGUMENTS
-Config: !`cat .claude/playbook.json`
-Last tag: !`git describe --tags --abbrev=0 2>/dev/null || echo "(no tags)"`
-CI: !`gh run list -L 3 2>/dev/null || echo "(gh not available)"`
+Config: !`cat .claude/playbook.json; true`
+Last tag: !`git describe --tags --abbrev=0 2>/dev/null || echo "(no tags)"; true`
+CI: !`gh run list -L 3 2>/dev/null || echo "(gh not available)"; true`
 
 Every outward action (push, PR, merge, deploy, migration, tag, release) needs an explicit yes from the user in this session.
 

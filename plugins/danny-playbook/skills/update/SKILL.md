@@ -4,7 +4,7 @@ description: Bring new or missing danny-playbook files into an already set-up pr
 disable-model-invocation: true
 ---
 Kit root: ${CLAUDE_PLUGIN_ROOT}
-Config: !`cat .claude/playbook.json 2>/dev/null || echo "not set up — run /danny-playbook:init"`
+Config: !`cat .claude/playbook.json 2>/dev/null || echo "not set up — run /danny-playbook:init"; true`
 
 1. If not set up, tell the user to run /danny-playbook:init and STOP.
 2. For each file under `${CLAUDE_PLUGIN_ROOT}/templates/claude/` that already exists in `.claude/`, diff kit vs project and list the ones that differ (the project copy may have intentional local edits).

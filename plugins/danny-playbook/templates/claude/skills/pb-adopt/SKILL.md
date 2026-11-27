@@ -5,7 +5,7 @@ disable-model-invocation: true
 argument-hint: "[area to focus on]"
 ---
 Focus: $ARGUMENTS
-Config: !`cat .claude/playbook.json`
+Config: !`cat .claude/playbook.json; true`
 
 Goal: understand before touching. Do not modify source code in this skill.
 

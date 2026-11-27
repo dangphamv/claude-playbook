@@ -5,8 +5,8 @@ disable-model-invocation: true
 argument-hint: "<idea or feature in one sentence>"
 ---
 Idea: $ARGUMENTS
-Config: !`cat .claude/playbook.json`
-Existing PRD: !`d=$(jq -r .docs.dir .claude/playbook.json); test -f "$d/prd.md" && head -60 "$d/prd.md" || echo "(none)"`
+Config: !`cat .claude/playbook.json; true`
+Existing PRD: !`d=$(jq -r .docs.dir .claude/playbook.json); test -f "$d/prd.md" && head -60 "$d/prd.md" || echo "(none)"; true`
 
 Rules: do not write code. Do not assume answers — ask.
 
