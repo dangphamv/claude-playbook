@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "danny-playbook",
+  "description": "Danny Pham's Claude Code workflow kit: the idea-to-release playbook as one installable plugin.",
+  "owner": {
+    "name": "Danny Pham"
+  },
+  "plugins": [
+    {
+      "name": "danny-playbook",
+      "source": "./plugins/danny-playbook",
+      "description": "Idea-to-release workflow for Claude Code: one command sets up a project's agents, skills, hooks and rules (kept out of git), then 8 phase skills that stop for your decisions."
+    }
+  ]
+}

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Code Playbook — Từ ý tưởng đến release</title>
+<style>
+:root{
+  --bg:#faf9f6;--fg:#1f1e1c;--muted:#6b6862;--line:#e6e2da;--card:#fff;
+  --accent:#c4552d;--accent-soft:#f6e6de;--code-bg:#1e1d1b;--code-fg:#ece8e1;
+  --ok:#2f7a4d;--warn:#a5680b;--info:#2d5f9e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#161513;--fg:#ece8e1;--muted:#a19c93;--line:#2e2c28;--card:#1d1c19;
+  --accent:#e0794f;--accent-soft:#3a2820;--code-bg:#0f0e0d;--ok:#5bb07f;--warn:#d9a03f;--info:#6f9fe0;}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.layout{display:grid;grid-template-columns:260px 1fr;max-width:1280px;margin:0 auto}
+nav{position:sticky;top:0;height:100vh;overflow:auto;padding:28px 18px;border-right:1px solid var(--line);font-size:14px}
+nav .brand{font-weight:700;font-size:15px;margin-bottom:18px}
+nav ol{list-style:none;padding:0;margin:0;counter-reset:n}
+nav li{margin:2px 0}
+nav li a{display:block;padding:5px 10px;border-radius:6px;color:var(--fg)}
+nav li a:hover{background:var(--accent-soft);text-decoration:none}
+nav .grp{margin:16px 0 6px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+main{padding:40px 56px 120px;min-width:0}
+header.hero{padding:12px 0 28px;border-bottom:1px solid var(--line);margin-bottom:32px}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-size:40px;line-height:1.15;margin:10px 0 14px;letter-spacing:-.02em}
+h2{font-size:28px;margin:64px 0 8px;letter-spacing:-.01em;scroll-margin-top:20px}
+h2 .num{color:var(--accent);margin-right:10px}
+h3{font-size:19px;margin:32px 0 8px}
+.lead{font-size:18px;color:var(--muted);max-width:760px}
+.sub{color:var(--muted);margin-top:0}
+code{font:13.5px/1.5 "SF Mono",ui-monospace,Menlo,Consolas,monospace;background:var(--accent-soft);padding:1px 6px;border-radius:4px}
+pre{background:var(--code-bg);color:var(--code-fg);padding:16px 18px;border-radius:10px;overflow:auto;font-size:13px;line-height:1.55;margin:12px 0 18px}
+pre code{background:none;padding:0;color:inherit}
+pre .c{color:#8d877c}
+.file{font:12px ui-monospace,Menlo,monospace;color:var(--muted);margin:16px 0 -8px}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;position:relative}
+.stage b{display:block;font-size:15px}
+.stage span{font-size:13px;color:var(--muted)}
+.stage .k{position:absolute;top:12px;right:14px;font:600 12px ui-monospace,monospace;color:var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:14px 0}
+.card h4{margin:0 0 6px;font-size:15px}
+.note{border-left:3px solid var(--info);background:var(--card);padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:15px}
+.note.warn{border-color:var(--warn)}
+.note.ok{border-color:var(--ok)}
+.note b:first-child{display:block;margin-bottom:2px}
+table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td code{white-space:nowrap}
+.steps{counter-reset:s;list-style:none;padding:0}
+.steps>li{counter-increment:s;position:relative;padding:4px 0 12px 42px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:2px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font:600 13px/28px sans-serif;text-align:center}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);margin-left:6px;vertical-align:middle}
+.deliv{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.deliv span{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--card)}
+footer{margin-top:80px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav{display:none}main{padding:24px 20px 80px}.pipeline,.grid2{grid-template-columns:1fr 1fr}h1{font-size:30px}}
+@media print{nav{display:none}.layout{grid-template-columns:1fr}pre{white-space:pre-wrap}}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav>
+  <div class="brand">Claude Code Playbook</div>
+  <div class="grp">Bắt đầu</div>
+  <ol>
+    <li><a href="#overview">Bức tranh tổng thể</a></li>
+    <li><a href="#setup">0. Setup nền tảng</a></li>
+  </ol>
+  <div class="grp">Vòng đời dự án</div>
+  <ol>
+    <li><a href="#product">1. Product</a></li>
+    <li><a href="#ba">2. BA &amp; Spec</a></li>
+    <li><a href="#ux">3. UX/UI</a></li>
+    <li><a href="#arch">4. Kiến trúc &amp; Plan</a></li>
+    <li><a href="#build">5. Frontend + Backend</a></li>
+    <li><a href="#qa">6. QC/QA</a></li>
+    <li><a href="#devops">7. DevOps &amp; Release</a></li>
+    <li><a href="#ops">8. Sau release</a></li>
+  </ol>
+  <div class="grp">Tham khảo</div>
+  <ol>
+    <li><a href="#cases">Các case đặc biệt</a></li>
+    <li><a href="#timeline">Lịch mẫu 2 tuần</a></li>
+    <li><a href="#cheatsheet">Cheatsheet</a></li>
+    <li><a href="#pitfalls">Bẫy thường gặp</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">Hướng dẫn thực chiến · cập nhật 11/2026</div>
+  <h1>Dùng Claude Code từ ý tưởng đến release một web app</h1>
+  <p class="lead">Một quy trình làm theo từng bước, đi qua Product, BA, UX/UI, Frontend + Backend, QC/QA và DevOps. Ở mỗi giai đoạn đều có: lệnh cần gõ, file cấu hình, tính năng nên dùng, và thứ bàn giao (deliverable) để chuyển sang giai đoạn sau.</p>
+</header>
+
+<!-- ============ OVERVIEW ============ -->
+<section id="overview">
+<h2>Bức tranh tổng thể</h2>
+<p class="sub">Đừng coi Claude Code là một chatbot viết code. Hãy coi nó là một <b>team ảo</b>: bạn là tech lead, còn Claude là các vai trò khác nhau. Mỗi vai được đóng gói thành <b>subagent</b> hoặc <b>skill</b>, có <b>hook</b> giữ kỷ luật và <b>CI</b> chạy khi bạn không ngồi máy.</p>
+
+<div class="pipeline">
+  <div class="stage"><span class="k">01</span><b>Product</b><span>Plan mode, deep-research, brainstorming → PRD</span></div>
+  <div class="stage"><span class="k">02</span><b>BA</b><span>Subagent BA, AskUserQuestion → user stories, AC, API contract</span></div>
+  <div class="stage"><span class="k">03</span><b>UX/UI</b><span>frontend-design, Artifacts, Chrome → wireframe, design tokens</span></div>
+  <div class="stage"><span class="k">04</span><b>Kiến trúc</b><span>opusplan, Plan agent → ADR, task breakdown</span></div>
+  <div class="stage"><span class="k">05</span><b>Build</b><span>Worktree song song, subagent, hooks, TDD</span></div>
+  <div class="stage"><span class="k">06</span><b>QC/QA</b><span>Playwright MCP, /code-review, /security-review</span></div>
+  <div class="stage"><span class="k">07</span><b>DevOps</b><span>GitHub Actions, <code>claude -p</code>, /ship, /steward</span></div>
+  <div class="stage"><span class="k">08</span><b>Vận hành</b><span>/schedule, /loop, Monitor, triage log</span></div>
+</div>
+
+<div class="note ok"><b>Nguyên tắc vàng</b>Mỗi giai đoạn kết thúc bằng một <b>file nằm trong repo</b> (<code>docs/prd.md</code>, <code>docs/stories.md</code>, <code>docs/adr/*.md</code>…). Giai đoạn sau đọc file đó bằng <code>@docs/prd.md</code> chứ không dựa vào trí nhớ của cuộc hội thoại. Context thì có hạn, còn file thì không mất.</div>
+
+<h3>Cấu trúc repo đề xuất</h3>
+<pre><code>my-app/
+├── CLAUDE.md                  <span class="c"># "hiến pháp" của dự án (&lt;200 dòng)</span>
+├── .claude/
+│   ├── settings.json          <span class="c"># permissions + hooks, commit chung cho team</span>
+│   ├── settings.local.json    <span class="c"># cấu hình cá nhân (gitignore)</span>
+│   ├── rules/                 <span class="c"># rule theo path: frontend.md, api.md, db.md</span>
+│   ├── agents/                <span class="c"># product-manager, ba, ux, qa, devops...</span>
+│   ├── skills/                <span class="c"># /new-feature, /release, /db-migrate...</span>
+│   └── hooks/                 <span class="c"># script cho hook</span>
+├── .mcp.json                  <span class="c"># MCP server dùng chung (Playwright, DB, GitHub)</span>
+├── docs/
+│   ├── prd.md  stories.md  api-contract.yaml
+│   ├── design/  adr/  test-plan.md  runbook.md
+├── apps/web  apps/api  packages/*
+└── .github/workflows/claude.yml</code></pre>
+</section>
+
+<!-- ============ SETUP ============ -->
+<section id="setup">
+<h2><span class="num">0</span>Setup nền tảng (làm 1 lần)</h2>
+<p class="sub">Phần này quyết định 80% chất lượng của các phần sau. Hãy đầu tư khoảng 1 giờ.</p>
+
+<h3>0.1 Cài đặt &amp; chọn bề mặt làm việc</h3>
+<table>
+<tr><th>Bề mặt</th><th>Dùng khi nào</th></tr>
+<tr><td>CLI (terminal)</td><td>Làm việc chính, mạnh nhất, đủ mọi tính năng</td></tr>
+<tr><td>VS Code / JetBrains extension</td><td>Muốn xem diff inline. Dùng chung settings với CLI</td></tr>
+<tr><td>Desktop app (<code>/desktop</code>)</td><td>Có browser pane, computer use, chạy scheduled task trên máy</td></tr>
+<tr><td>Web / cloud (claude.ai/code)</td><td>Giao việc dài cho cloud. Kéo session về máy bằng <code>/teleport</code></td></tr>
+<tr><td>GitHub (<code>@claude</code>)</td><td>Review PR, sửa issue ngay trên GitHub</td></tr>
+</table>
+
+<h3>0.2 Model &amp; effort</h3>
+<pre><code>/model opusplan        <span class="c"># Opus khi plan, Sonnet khi thực thi: cân bằng giữa chất lượng và chi phí</span>
+/model opus            <span class="c"># task khó: kiến trúc, debug hóc búa</span>
+/effort high           <span class="c"># low | medium | high | xhigh | max | auto</span>
+/fast                  <span class="c"># bật/tắt fast mode khi cần phản hồi nhanh</span>
+/usage                 <span class="c"># xem chi phí &amp; giới hạn</span></code></pre>
+
+<h3>0.3 CLAUDE.md: bộ nhớ dự án</h3>
+<p>Chạy <code>/init</code> để Claude quét repo và viết bản nháp, sau đó tự sửa lại. Nếu đặt <code>CLAUDE_CODE_NEW_INIT=1</code>, <code>/init</code> sẽ hỏi thêm để set up luôn skills và hooks.</p>
+<div class="file">CLAUDE.md</div>
+<pre><code># My App
+
+## Stack
+- FE: Next.js 16 App Router, Tailwind, shadcn/ui — apps/web
+- BE: NestJS + Prisma + Postgres — apps/api
+- Monorepo: pnpm + turbo
+
+## Lệnh
+- `pnpm dev` | `pnpm test` | `pnpm lint` | `pnpm typecheck`
+- Test 1 file: `pnpm --filter api test -- path/to/file.spec.ts`
+
+## Quy ước
+- Nguồn sự thật cho yêu cầu: @docs/prd.md, @docs/stories.md
+- API contract: @docs/api-contract.yaml — đổi API thì sửa file này trước
+- Conventional commits. Không commit trực tiếp lên main.
+- Mỗi story xong phải có test + cập nhật checklist trong docs/stories.md
+
+## Không được
+- Không đọc/sửa .env*. Không chạy migration trên DB production.</code></pre>
+
+<p>Thứ tự nạp: CLAUDE.md của tổ chức (managed) → <code>~/.claude/CLAUDE.md</code> (cá nhân, mọi project) → <code>./CLAUDE.md</code> (project, commit) → <code>CLAUDE.local.md</code> (cá nhân trong project, gitignore). Claude cũng đọc <code>AGENTS.md</code> nếu repo đã có. Có thể import file khác bằng <code>@docs/xxx.md</code>.</p>
+<p><b>Rules theo path</b>: đặt trong <code>.claude/rules/</code>. Rule chỉ được nạp khi Claude chạm vào file khớp glob, nhờ vậy CLAUDE.md gọn hơn.</p>
+<div class="file">.claude/rules/api.md</div>
+<pre><code>---
+paths: ["apps/api/**"]
+---
+- Mọi endpoint phải validate DTO bằng class-validator
+- Lỗi trả về theo RFC 7807 (problem+json)
+- Query nặng phải có index; kiểm tra bằng EXPLAIN trước khi merge</code></pre>
+
+<div class="note"><b>Auto memory</b>Claude tự ghi chú những điều học được (<code>MEMORY.md</code>), ví dụ “user thích dùng pnpm” hay “DB prod ở Neon”. Bật hoặc tắt bằng <code>/memory</code>. CLAUDE.md chỉ là <i>context</i>, Claude có thể không làm theo. Những gì <b>bắt buộc</b> thì phải dùng hook hoặc <code>permissions.deny</code>.</div>
+
+<h3>0.4 Permissions: an toàn mà không bị hỏi liên tục</h3>
+<div class="file">.claude/settings.json</div>
+<pre><code>{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)", "Bash(git status)", "Bash(git diff *)", "Bash(git log *)",
+      "Bash(docker compose *)", "Edit(/apps/**)", "Edit(/packages/**)", "Edit(/docs/**)"
+    ],
+    "ask":  ["Bash(git push *)", "Bash(pnpm prisma migrate deploy *)"],
+    "deny": ["Read(./.env*)", "Read(./secrets/**)", "Bash(rm -rf *)", "Bash(*--force*)"]
+  }
+}</code></pre>
+<table>
+<tr><th>Permission mode</th><th>Ý nghĩa</th><th>Dùng khi</th></tr>
+<tr><td><code>plan</code></td><td>Chỉ đọc và lập kế hoạch, không sửa file</td><td>Giai đoạn Product, BA, kiến trúc</td></tr>
+<tr><td><code>default</code></td><td>Hỏi trước mỗi hành động có rủi ro</td><td>Repo lạ, việc nhạy cảm</td></tr>
+<tr><td><code>acceptEdits</code></td><td>Tự sửa file, chạy mkdir/mv/cp</td><td>Đang code tính năng</td></tr>
+<tr><td><code>auto</code></td><td>Một classifier tự duyệt hành động an toàn, chặn hành động nguy hiểm</td><td>Mặc định hằng ngày</td></tr>
+<tr><td><code>dontAsk</code></td><td>Cái gì cần hỏi thì tự từ chối</td><td>CI bị khóa chặt</td></tr>
+<tr><td><code>bypassPermissions</code></td><td>Không hỏi gì cả</td><td><b>Chỉ</b> dùng trong container/VM cô lập</td></tr>
+</table>
+<p>Nhấn <b>Shift+Tab</b> để xoay vòng các mode. Bật <code>/sandbox</code> để cô lập filesystem và network khi chạy lệnh (macOS dùng Seatbelt).</p>
+
+<h3>0.5 Hooks: kỷ luật tự động</h3>
+<p>Hook là script chạy ở các sự kiện như <code>PreToolUse</code>, <code>PostToolUse</code>, <code>Stop</code>, <code>SessionStart</code>, <code>UserPromptSubmit</code>… Khác với CLAUDE.md, hook <b>luôn chạy</b>. Exit code <code>2</code> sẽ chặn hành động và gửi stderr cho Claude tự sửa.</p>
+<div class="file">.claude/settings.json (thêm vào)</div>
+<pre><code>{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{ "type": "command",
+        "command": "f=$(jq -r '.tool_input.file_path'); npx prettier --write \"$f\" &gt;/dev/null 2&gt;&amp;1; npx eslint --fix \"$f\" || exit 2" }]
+    }],
+    "PreToolUse": [{
+      "matcher": "Edit|Write|Read",
+      "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-env.sh" }]
+    }],
+    "Stop": [{
+      "hooks": [{ "type": "command",
+        "command": "[ \"$(jq -r .stop_hook_active)\" = true ] &amp;&amp; exit 0; pnpm typecheck 1&gt;&amp;2 || exit 2" }]
+    }],
+    "SessionStart": [{
+      "hooks": [{ "type": "command",
+        "command": "echo \"Branch: $(git branch --show-current)\"; git status --short | head -20; grep -m5 '\\[ \\]' docs/stories.md" }]
+    }],
+    "Notification": [{
+      "matcher": "permission_prompt|idle_prompt",
+      "hooks": [{ "type": "command", "command": "osascript -e 'display notification \"Claude đang chờ bạn\" with title \"Claude Code\"'" }]
+    }]
+  }
+}</code></pre>
+<ul>
+<li><b>Stop</b>: kiểm tra <code>stop_hook_active</code> để tránh vòng lặp vô hạn khi typecheck không thể pass.</li>
+<li><b>SessionStart</b>: stdout được đưa vào context, nên mỗi session mới Claude đã biết branch, file đang sửa và story chưa xong.</li>
+<li><b>Notification</b>: báo trên desktop khi Claude cần bạn duyệt hoặc đang chờ, nên bạn có thể làm việc khác trong lúc chờ.</li>
+</ul>
+<div class="file">.claude/hooks/block-env.sh</div>
+<pre><code>#!/usr/bin/env bash
+f=$(jq -r '.tool_input.file_path // empty')
+case "$(basename "$f")" in .env*) echo "Không được chạm vào $f" &gt;&amp;2; exit 2;; esac</code></pre>
+<div class="note ok"><b>Mẹo</b>Hook <code>Stop</code> chạy typecheck. Nếu typecheck fail, Claude không được kết thúc lượt mà phải tự sửa cho đến khi pass. Đây là cách rẻ nhất để có code “xanh” sau mỗi lượt. Ngoài <code>command</code>, hook còn có các loại <code>http</code>, <code>prompt</code>, <code>agent</code>, <code>mcp_tool</code>. Xem cấu hình đang chạy bằng <code>/hooks</code>.</div>
+
+<h3>0.5b Statusline &amp; output style</h3>
+<pre><code>/statusline hiện model, branch, % context đã dùng và chi phí session
+<span class="c"># → sinh script ~/.claude/statusline.sh và key "statusLine" trong settings</span>
+/output-style Explanatory   <span class="c"># Claude giải thích lý do khi code (hợp lúc học stack mới)</span>
+/output-style Learning      <span class="c"># Claude chừa phần để bạn tự viết</span></code></pre>
+
+<h3>0.6 MCP: nối Claude với công cụ bên ngoài</h3>
+<pre><code><span class="c"># Browser test tự động</span>
+claude mcp add --scope project --transport stdio playwright -- npx -y @playwright/mcp@latest
+<span class="c"># Database (role read-only!)</span>
+claude mcp add --scope project --transport stdio db -- npx -y @bytebase/dbhub --dsn "${DATABASE_URL_RO}"
+<span class="c"># Server HTTP có auth</span>
+claude mcp add --transport http github https://api.githubcopilot.com/mcp/ --header "Authorization: Bearer $GH_PAT"
+
+claude mcp list         <span class="c"># kiểm tra</span>
+/mcp                    <span class="c"># trong session: xem trạng thái, đăng nhập OAuth</span></code></pre>
+<p><code>--scope project</code> ghi vào <code>.mcp.json</code> (commit cho cả team), <code>--scope user</code> dùng cho mọi project của bạn. <code>.mcp.json</code> hỗ trợ biến dạng <code>${VAR}</code>, nên không cần hardcode secret.</p>
+
+<h3>0.7 Plugins, skills có sẵn</h3>
+<pre><code>/plugin                                         <span class="c"># mở marketplace</span>
+/plugin install commit-commands@claude-plugins-official</code></pre>
+<p>Plugin đóng gói skills, subagents, hooks và MCP thành một gói, giúp cả team dùng chung một bộ. Nên cài các skill theo stack, ví dụ bộ <code>vercel:*</code> (nextjs, deploy, env…), <code>frontend-design</code> và <code>dataviz</code>.</p>
+</section>
+
+<!-- ============ PRODUCT ============ -->
+<section id="product">
+<h2><span class="num">1</span>Product: từ ý tưởng thành PRD</h2>
+<p class="sub">Mục tiêu: biến một ý tưởng mơ hồ thành tài liệu yêu cầu đủ rõ để bắt đầu thiết kế.</p>
+<div class="deliv"><span>📄 docs/prd.md</span><span>📄 docs/research.md</span><span>📊 Scope MVP / non-goals</span></div>
+
+<ol class="steps">
+<li><b>Vào plan mode</b> để Claude chỉ đọc, hỏi và suy nghĩ, chưa đụng tới code.
+<pre><code>claude --permission-mode plan
+<span class="c"># hoặc trong session: Shift+Tab đến "plan", hoặc</span>
+/plan Ý tưởng: app đặt lịch cắt tóc cho tiệm nhỏ ở VN...</code></pre></li>
+<li><b>Brainstorm có cấu trúc.</b> Skill <code>brainstorming</code> buộc Claude hỏi ngược lại trước khi đề xuất. Claude sẽ dùng <b>AskUserQuestion</b> để đưa ra các lựa chọn có sẵn (đối tượng người dùng, mô hình kiếm tiền, nền tảng…), bạn chỉ cần chọn.
+<pre><code>Dùng skill brainstorming. Hỏi tôi tối đa 8 câu để làm rõ: user persona,
+pain point, đối thủ, mô hình doanh thu, ràng buộc (ngân sách, thời gian, team).</code></pre></li>
+<li><b>Nghiên cứu thị trường.</b> Skill <code>deep-research</code> chia nhỏ việc cho nhiều subagent search web song song rồi tổng hợp lại thành báo cáo có nguồn.
+<pre><code>/deep-research So sánh 5 app đặt lịch salon tại VN &amp; ĐNA: tính năng,
+giá, review người dùng, khoảng trống thị trường. Lưu vào docs/research.md</code></pre></li>
+<li><b>Viết PRD.</b> Yêu cầu một format cố định để các giai đoạn sau đọc được.
+<pre><code>Dựa trên @docs/research.md và câu trả lời của tôi, viết docs/prd.md gồm:
+Problem, Goals/Non-goals, Personas, Core flows, MVP scope (MoSCoW),
+Success metrics (có số), Risks, Open questions,
+Non-functional requirements (hiệu năng, bảo mật, a11y, i18n, SEO, uptime),
+Analytics events cần đo (để kiểm chứng metrics), Compliance
+(dữ liệu cá nhân theo Nghị định 13/2023, điều khoản, cookie).</code></pre></li>
+<li><b>Ước lượng chi phí vận hành</b>: hosting, DB, email/SMS, lượng gọi LLM nếu có, cùng các giới hạn của gói free. Ghi vào phần Risks để giai đoạn kiến trúc không chọn sai.</li>
+<li><b>Chia sẻ cho stakeholder.</b> Nhờ Claude publish PRD thành <b>Artifact</b> hoặc <b>Doc</b> (trang web riêng tư, có link để share và cho người khác comment). Comment của stakeholder có thể đọc lại bằng tool, rồi Claude sửa PRD theo đó.</li>
+</ol>
+
+<div class="card"><h4>Subagent “product-manager”: tái sử dụng cho mọi ý tưởng</h4>
+<div class="file">.claude/agents/product-manager.md</div>
+<pre><code>---
+name: product-manager
+description: Dùng khi cần phân tích ý tưởng, viết/review PRD, ưu tiên backlog
+tools: Read, Grep, Glob, WebSearch, WebFetch, Write
+model: opus
+---
+Bạn là Senior PM. Luôn: (1) hỏi "vấn đề của ai, đo bằng gì";
+(2) cắt scope MVP tàn nhẫn; (3) ghi rõ non-goals; (4) metrics phải có số.
+Output vào docs/. Không viết code.</code></pre></div>
+</section>
+
+<!-- ============ BA ============ -->
+<section id="ba">
+<h2><span class="num">2</span>BA: user stories, acceptance criteria, contract</h2>
+<p class="sub">Mục tiêu: PRD → backlog có thể làm và kiểm chứng được.</p>
+<div class="deliv"><span>📄 docs/stories.md</span><span>📄 docs/api-contract.yaml</span><span>📄 docs/data-model.md</span><span>📄 docs/brd.md</span></div>
+
+<ol class="steps">
+<li><b>Sinh user stories + AC dạng Gherkin.</b> Nhờ có AC, QA sau này viết test tự động được ngay.
+<pre><code>Đọc @docs/prd.md. Viết docs/stories.md: epic → story (As a/I want/So that),
+mỗi story có AC dạng Given/When/Then, estimate S/M/L, dependency.
+Đánh ID: AUTH-01, BOOK-03... Thêm checklist [ ] để theo dõi tiến độ.</code></pre></li>
+<li><b>BRD chính thức</b> nếu cần (khách hàng hoặc doanh nghiệp): dùng skill <code>doc-brd</code>.</li>
+<li><b>Data model &amp; API contract trước khi code.</b> Đây là “hợp đồng” giữa FE và BE, cho phép hai bên làm song song.
+<pre><code>Từ stories, thiết kế data model (ERD dạng mermaid) vào docs/data-model.md
+và OpenAPI 3.1 vào docs/api-contract.yaml. Liệt kê edge case cho từng endpoint.</code></pre></li>
+<li><b>Review chéo bằng subagent</b> để tìm lỗ hổng.
+<pre><code>Dùng subagent product-manager review @docs/stories.md đối chiếu @docs/prd.md:
+story nào thiếu, AC nào không test được, mâu thuẫn nào?</code></pre></li>
+<li><b>Những thứ BA hay quên</b>: ma trận phân quyền (role × hành động), state machine của entity chính (ví dụ booking: pending → confirmed → done/cancelled), quy tắc nghiệp vụ (múi giờ, tiền tệ, làm tròn), và các trạng thái lỗi, rỗng, đang tải, offline cho từng màn hình.
+<pre><code>Liệt kê mọi edge case &amp; business rule còn thiếu trong @docs/stories.md:
+timezone, đồng thời (2 người đặt cùng slot), hủy/hoàn tiền, xóa tài khoản,
+phân quyền. Hỏi tôi những điểm cần quyết định bằng AskUserQuestion.</code></pre></li>
+<li><b>Đẩy lên tracker</b> (nếu có MCP Linear/Jira/GitHub): “Tạo GitHub issue cho mỗi story, label theo epic”.</li>
+</ol>
+</section>
+
+<!-- ============ UX ============ -->
+<section id="ux">
+<h2><span class="num">3</span>UX/UI: wireframe → prototype → design system</h2>
+<p class="sub">Mục tiêu: thấy được sản phẩm trước khi viết dòng code thật đầu tiên.</p>
+<div class="deliv"><span>🧭 User flow (mermaid)</span><span>🖼 Prototype HTML</span><span>🎨 Design tokens</span><span>📄 docs/design/</span></div>
+
+<ol class="steps">
+<li><b>User flow</b> cho các core flow trong PRD, viết bằng mermaid, đặt trong <code>docs/design/flows.md</code>.</li>
+<li><b>Chọn hướng thẩm mỹ.</b> Skill <code>frontend-design</code> và <code>ui-ux-pro-max</code> có sẵn thư viện style, bảng màu, font pairing và guideline UX. Yêu cầu Claude đưa ra 2–3 hướng khác nhau. Claude có thể dùng AskUserQuestion kèm <b>preview</b> ASCII mockup để bạn so sánh cạnh nhau.</li>
+<li><b>Prototype clickable bằng Artifact.</b> Claude dựng trang HTML tương tác rồi publish thành link riêng tư, để bạn và khách hàng bấm thử và comment trực tiếp.
+<pre><code>Làm prototype clickable cho flow đặt lịch (5 màn hình), mobile-first,
+publish thành artifact để tôi gửi khách hàng góp ý.</code></pre></li>
+<li><b>Kiểm tra bằng mắt thật.</b> Với <code>claude --chrome</code> (hoặc <code>/chrome</code>), Claude mở prototype trong Chrome, chụp screenshot, resize về cỡ mobile và tự chỉnh layout.</li>
+<li><b>Chốt design system</b> thành code: tokens (màu, spacing, radius, typography) đưa vào <code>tailwind</code> và theme của <code>shadcn/ui</code>. Thêm <code>.claude/rules/frontend.md</code> để mọi component sau này tuân theo.</li>
+</ol>
+<div class="note"><b>Có file Figma?</b>Kết nối MCP của Figma (Dev Mode) để Claude đọc frame, token và component trực tiếp. Bạn cũng có thể chỉ cần kéo screenshot vào terminal, vì Claude đọc được ảnh.</div>
+</section>
+
+<!-- ============ ARCH ============ -->
+<section id="arch">
+<h2><span class="num">4</span>Kiến trúc &amp; Plan triển khai</h2>
+<p class="sub">Mục tiêu: quyết định kỹ thuật có lý do, và chia task đủ nhỏ để làm song song.</p>
+<div class="deliv"><span>📄 docs/adr/0001-*.md</span><span>📄 docs/plan.md</span><span>🗂 Skeleton monorepo</span></div>
+
+<ol class="steps">
+<li><b>Dùng <code>/model opusplan</code></b> và plan mode. Built-in <b>Plan agent</b> (chỉ đọc) sẽ khảo sát repo và tài liệu rồi đề xuất phương án.</li>
+<li><b>Mỗi quyết định lớn là một ADR</b>: chọn DB, auth, kiểu hosting, queue hay cron… Yêu cầu Claude đưa ra 2–3 phương án, trade-off và kết luận.</li>
+<li><b>Task breakdown theo dependency.</b>
+<pre><code>Từ @docs/stories.md và @docs/api-contract.yaml, lập docs/plan.md:
+- Phase 0: scaffold (monorepo, CI, DB, auth)
+- Các track song song: FE / BE / infra — đánh dấu task nào độc lập được
+- Mỗi task: story ID, file dự kiến, test cần có, Definition of Done</code></pre></li>
+<li><b>Duyệt plan.</b> Nhấn <code>Ctrl+G</code> để mở plan trong editor và sửa trực tiếp, sau đó approve để thoát plan mode và bắt đầu làm.</li>
+<li><b>Các quyết định nền móng hay bị bỏ sót</b>, cũng nên ghi thành ADR:
+<ul>
+<li><b>Môi trường dev local</b>: <code>docker compose</code> cho DB, Redis, mail catcher, cộng với script seed data, để <code>pnpm dev</code> chạy được ngay sau khi clone.</li>
+<li><b>Cấu hình &amp; secrets</b>: env schema được validate khi khởi động (zod), <code>.env.example</code>, secrets nằm ở đâu cho từng môi trường.</li>
+<li><b>Observability</b>: structured log, error tracking (Sentry), healthcheck, request ID.</li>
+<li><b>Bảo mật</b>: threat model ngắn (STRIDE) cho auth, upload, payment; rate limit; CORS; CSP.</li>
+<li><b>Chiến lược migration DB</b>: mở rộng trước, thu hẹp sau (expand → contract), backup trước khi migrate.</li>
+</ul></li>
+<li><b>Scaffold</b> bằng một lượt duy nhất, ví dụ “Phase 0”. Các skill như <code>vercel:bootstrap</code>, <code>vercel:nextjs</code>, <code>vercel:create-a-backend</code> giúp chọn đúng pattern mới nhất.</li>
+</ol>
+</section>
+
+<!-- ============ BUILD ============ -->
+<section id="build">
+<h2><span class="num">5</span>Frontend + Backend: build song song</h2>
+<p class="sub">Đây là giai đoạn tận dụng “sức mạnh” của Claude Code nhiều nhất: song song hóa, subagent và vòng lặp tự kiểm.</p>
+
+<h3>5.1 Git worktree: nhiều Claude chạy cùng lúc, không giẫm chân nhau</h3>
+<pre><code><span class="c"># Mỗi terminal một worktree + branch riêng</span>
+claude -w api-booking      <span class="c"># → .claude/worktrees/api-booking, branch worktree-api-booking</span>
+claude -w web-booking
+claude -w infra-ci</code></pre>
+<p>Tạo file <code>.worktreeinclude</code> (cú pháp giống gitignore) để copy <code>.env</code> vào worktree mới. Subagent cũng có thể tự chạy trong worktree riêng nhờ <code>isolation: worktree</code> trong frontmatter.</p>
+
+<h3>5.2 Vòng lặp chuẩn cho một story (TDD)</h3>
+<ol class="steps">
+<li><code>/plan BOOK-03: đặt lịch, kiểm tra trùng slot</code>: Claude đọc AC và đề xuất các file sẽ sửa.</li>
+<li>“Viết test từ AC trước, chạy cho fail, <b>commit test</b>.” Commit test trước để Claude không thể sửa test cho khớp với code.</li>
+<li>Chuyển sang <code>acceptEdits</code>/<code>auto</code>: “Implement cho đến khi test pass. Không sửa test.”</li>
+<li>Hook <code>PostToolUse</code> lo lint/format, hook <code>Stop</code> lo typecheck. Claude tự sửa nếu fail.</li>
+<li><code>/simplify</code>: dọn code (trùng lặp, abstraction thừa). Lệnh này không tìm bug.</li>
+<li><code>/code-review medium</code>: tìm bug thật trong diff, sau đó <code>--fix</code> để áp dụng sửa.</li>
+<li>Tick checklist trong <code>docs/stories.md</code>, commit theo conventional commit.</li>
+</ol>
+
+<h3>5.3 Skill “/new-feature”: đóng gói vòng lặp trên</h3>
+<div class="file">.claude/skills/new-feature/SKILL.md</div>
+<pre><code>---
+name: new-feature
+description: Thực hiện 1 user story end-to-end theo TDD
+argument-hint: "&lt;STORY-ID&gt;"
+disable-model-invocation: true
+---
+Story: $ARGUMENTS
+1. Đọc story $ARGUMENTS trong @docs/stories.md và phần liên quan ở @docs/api-contract.yaml
+2. Liệt kê file sẽ đổi, chờ tôi xác nhận
+3. Viết test từ AC → chạy → phải FAIL → commit "test($ARGUMENTS): ..."
+4. Implement tới khi `pnpm test` pass; KHÔNG sửa test
+5. Chạy /simplify rồi /code-review medium --fix
+6. Tick checklist, commit "feat($ARGUMENTS): ..."</code></pre>
+<p>Sau đó chỉ cần gõ <code>/new-feature BOOK-03</code>.</p>
+
+<h3>5.4 Subagent chuyên trách</h3>
+<div class="grid2">
+<div class="card"><h4>backend-engineer</h4><code>tools: Read, Edit, Write, Bash, Grep, Glob</code><br>Chỉ làm trong <code>apps/api</code>, tuân theo contract, viết integration test với DB thật (docker).</div>
+<div class="card"><h4>frontend-engineer</h4>Chỉ làm trong <code>apps/web</code>, dùng shadcn, đi theo design tokens, kiểm tra trên Chrome sau khi sửa UI.</div>
+<div class="card"><h4>db-reviewer</h4><code>model: sonnet</code>, chỉ đọc. Review migration: lock bảng, index, khả năng rollback.</div>
+<div class="card"><h4>Explore (built-in)</h4>Tìm kiếm nhanh trên codebase lớn mà không làm đầy context chính. Dùng nó thay vì tự grep hàng chục file.</div>
+</div>
+<p>Giao việc nặng xuống nền bằng <b>Ctrl+B</b>, xem các task đang chạy bằng <code>/tasks</code>. Mặc định chạy được tối đa 20 subagent cùng lúc. Lệnh <code>claude agents</code> theo dõi các session chạy nền.</p>
+<div class="note"><b>Agent teams (thử nghiệm)</b>Bật bằng <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> (biến shell, hoặc trong <code>"env"</code> của settings). Một session làm lead, các teammate có context riêng và nhắn tin trực tiếp cho nhau, ví dụ “FE”, “BE”, “QA” cùng làm một epic. Có thể hiển thị dạng split pane trong tmux/iTerm2 (<code>teammateMode</code>). Tốn token hơn nhiều, không resume được teammate in-process, và mỗi session chỉ có một team. Hợp với epic lớn, còn story nhỏ thì không cần.</div>
+
+<h3>5.5 Quản lý context &amp; an toàn</h3>
+<table>
+<tr><th>Lệnh</th><th>Khi nào</th></tr>
+<tr><td><code>/context</code></td><td>Xem context đang bị chiếm bởi gì (file, MCP, memory)</td></tr>
+<tr><td><code>/compact giữ lại quyết định về schema</code></td><td>Session dài, cần tóm tắt có định hướng</td></tr>
+<tr><td><code>/clear</code></td><td>Chuyển sang story mới. Context sạch thì cho kết quả tốt hơn</td></tr>
+<tr><td><code>Esc Esc</code> / <code>/rewind</code></td><td>Quay lại checkpoint (code và/hoặc hội thoại) khi Claude đi sai hướng</td></tr>
+<tr><td><code>claude --continue</code> / <code>--resume</code></td><td>Tiếp tục session cũ</td></tr>
+</table>
+<div class="note warn"><b>Lưu ý</b>Checkpoint không theo dõi file bị đổi qua Bash (<code>sed</code>, <code>rm</code>…), nên nó không thay thế được git. Hãy commit thường xuyên.</div>
+
+<h3>5.6 Các việc phụ trong lúc build</h3>
+<table>
+<tr><th>Tình huống</th><th>Cách làm với Claude Code</th></tr>
+<tr><td>Debug bug khó</td><td>Dán stack trace hoặc screenshot. Yêu cầu “đưa ra giả thuyết, thêm log để kiểm chứng, <b>chưa sửa</b>”, rồi mới sửa. Dùng <code>/effort high</code> hoặc <code>/model opus</code>.</td></tr>
+<tr><td>FE cần API chưa xong</td><td>Sinh mock (MSW) từ <code>api-contract.yaml</code> và sinh type TS từ OpenAPI. Hai track không phải chờ nhau.</td></tr>
+<tr><td>Đổi API contract giữa chừng</td><td>Sửa <code>api-contract.yaml</code> trước, rồi nhờ Claude liệt kê mọi chỗ FE/BE bị ảnh hưởng (subagent Explore) và sửa cả hai phía trong cùng một PR.</td></tr>
+<tr><td>Migration DB</td><td>Subagent <code>db-reviewer</code> kiểm tra trước khi chạy. Không bao giờ để Claude chạy migrate trên prod (rule <code>ask</code>/<code>deny</code>).</td></tr>
+<tr><td>Tính năng rủi ro</td><td>Bọc trong feature flag (skill <code>vercel:flags-sdk</code> hoặc LaunchDarkly…) để release dần.</td></tr>
+<tr><td>Tài liệu</td><td>Cuối mỗi epic: “cập nhật README, docs API, sơ đồ kiến trúc theo code hiện tại”.</td></tr>
+<tr><td>Thêm thư viện</td><td>Yêu cầu Claude kiểm tra license, số tải hằng tuần, lần release gần nhất và bundle size trước khi cài. Cẩn thận với package bị đặt tên gần giống (typosquat).</td></tr>
+</table>
+</section>
+
+<!-- ============ QA ============ -->
+<section id="qa">
+<h2><span class="num">6</span>QC/QA: kiểm chứng, không phải “trông có vẻ đúng”</h2>
+<div class="deliv"><span>📄 docs/test-plan.md</span><span>🧪 E2E Playwright</span><span>🔒 Security report</span><span>📈 Coverage</span></div>
+
+<ol class="steps">
+<li><b>Test plan từ AC.</b> Subagent <code>qa-engineer</code> sinh ma trận test (happy path, edge, negative, phân quyền) và map mỗi case với story ID.</li>
+<li><b>E2E bằng Playwright MCP.</b> Claude <i>thực sự</i> mở browser, click theo flow, ghi lại lỗi, rồi chuyển thành file <code>*.spec.ts</code> để chạy trong CI.
+<pre><code>Dùng Playwright MCP chạy flow đặt lịch trên localhost:3000 theo AC của BOOK-01..05.
+Lỗi nào thì ghi lại + screenshot. Sau đó sinh e2e/booking.spec.ts tương ứng.</code></pre></li>
+<li><b>Kiểm tra trực quan &amp; console</b> với Chrome integration: đọc console error, network request lỗi, quay GIF lại flow để gửi team.</li>
+<li><b>Code review nhiều tầng.</b>
+<table>
+<tr><th>Lệnh</th><th>Mục đích</th></tr>
+<tr><td><code>/code-review low|medium|high</code></td><td>Tìm bug trong diff hiện tại. Mức càng cao càng nhiều finding</td></tr>
+<tr><td><code>/code-review high 42 --comment</code></td><td>Review PR #42, post comment inline lên GitHub</td></tr>
+<tr><td><code>/code-review ultra</code></td><td>Review sâu bằng nhiều agent trên cloud. Dùng trước release lớn (có tính phí)</td></tr>
+<tr><td><code>/security-review</code></td><td>Tìm lỗ hổng bảo mật trong thay đổi so với nhánh chính</td></tr>
+<tr><td><code>/simplify</code></td><td>Dọn code, không tìm bug</td></tr>
+</table></li>
+<li><b>Bug bash.</b> Dán log hoặc stack trace và yêu cầu “tái hiện bằng test trước, rồi mới sửa”. Mỗi bug fix đều kèm một regression test.</li>
+<li><b>Non-functional.</b> Lighthouse/Core Web Vitals (subagent <code>vercel:performance-optimizer</code>), load test bằng k6 (nhờ Claude viết script), kiểm tra a11y.</li>
+</ol>
+<h3>Các loại test hay bị quên</h3>
+<table>
+<tr><th>Loại</th><th>Cách làm</th></tr>
+<tr><td>Contract test</td><td>Kiểm tra response thật của API khớp <code>api-contract.yaml</code> (ví dụ dùng schemathesis hoặc Dredd) trong CI</td></tr>
+<tr><td>Phân quyền</td><td>Với mỗi endpoint, thử gọi bằng mọi role, kể cả chưa đăng nhập. Sinh tự động từ ma trận phân quyền ở bước BA</td></tr>
+<tr><td>Đồng thời</td><td>Hai request cùng lúc vào một tài nguyên (đặt cùng slot, trừ kho)</td></tr>
+<tr><td>Visual regression</td><td>Screenshot test của Playwright cho các màn hình chính, cả mobile và desktop</td></tr>
+<tr><td>Accessibility</td><td>axe-core trong E2E. Kiểm tra điều hướng bằng bàn phím qua Chrome</td></tr>
+<tr><td>Dữ liệu xấu</td><td>Unicode/tiếng Việt có dấu, chuỗi rất dài, múi giờ, số âm, file upload sai định dạng</td></tr>
+<tr><td>Migration</td><td>Chạy migrate trên bản copy dữ liệu giống prod, thử rollback</td></tr>
+<tr><td>Test flaky</td><td>“Chạy test X 20 lần, tìm nguyên nhân flaky” thay vì thêm retry</td></tr>
+<tr><td>UAT</td><td>Deploy preview, gửi link kèm checklist từ AC cho khách hàng hoặc PO duyệt trước khi release</td></tr>
+</table>
+</section>
+
+<!-- ============ DEVOPS ============ -->
+<section id="devops">
+<h2><span class="num">7</span>DevOps &amp; Release</h2>
+<div class="deliv"><span>⚙️ CI/CD</span><span>🐳 Dockerfile</span><span>📄 docs/runbook.md</span><span>🚀 Production</span></div>
+
+<h3>7.1 Claude trong GitHub Actions</h3>
+<p>Trong Claude Code, chạy <code>/install-github-app</code>: lệnh này cài GitHub App và tạo secret cùng workflow. Sau đó, chỉ cần comment <code>@claude</code> trong issue hoặc PR là Claude làm việc.</p>
+<div class="file">.github/workflows/claude.yml</div>
+<pre><code>name: Claude
+on:
+  issue_comment: { types: [created] }
+  pull_request_review_comment: { types: [created] }
+  pull_request: { types: [opened, synchronize] }
+jobs:
+  claude:
+    runs-on: ubuntu-latest
+    permissions: { contents: write, pull-requests: write, issues: write, id-token: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: "--max-turns 10"
+          # Tự review mọi PR:
+          plugins: "code-review@claude-plugins-official"
+          prompt: ${{ github.event_name == 'pull_request' &amp;&amp; '/code-review:code-review --comment' || '' }}</code></pre>
+<div class="note"><b>Dùng gói Pro/Max thay vì API key</b>Chạy <code>claude setup-token</code> trên máy, lưu token vào secret <code>CLAUDE_CODE_OAUTH_TOKEN</code>, rồi trong workflow thay <code>anthropic_api_key</code> bằng <code>claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}</code>. Token gắn với tài khoản của người tạo, nên không phù hợp làm secret chung cho cả tổ chức.</div>
+<div class="note"><b>Không muốn tự viết workflow?</b><b>Code Review được quản lý</b>: Owner của tổ chức bật trong claude.ai, mục Organization settings → Claude Ship → Review. Sau đó cài GitHub App và chọn repo. Code Review tự review mọi PR (sau khi tạo, sau mỗi push, hoặc khi comment <code>@claude review</code>), có các mức Quick, Standard, Deep. Tùy biến bằng file <code>REVIEW.md</code> trong repo. Có tính phí, nên đặt spend limit.</div>
+
+<h3>7.2 Headless mode cho script &amp; pipeline</h3>
+<pre><code><span class="c"># Sinh release notes từ git log, output JSON có schema</span>
+git log v1.2.0..HEAD --oneline | claude -p "Viết release notes tiếng Việt, nhóm theo feat/fix" \
+  --output-format json --max-budget-usd 0.5
+
+<span class="c"># Khóa chặt quyền trong CI</span>
+claude -p "Sửa lỗi lint" --permission-mode dontAsk --allowedTools "Read,Edit,Bash(pnpm lint *)"
+
+<span class="c"># --bare: bỏ qua CLAUDE.md/hooks/MCP → chạy nhanh, có thể tái lập (cần ANTHROPIC_API_KEY)</span>
+claude --bare -p "..." --json-schema '{"type":"object",...}'</code></pre>
+<p>Cần tích hợp sâu hơn (bot nội bộ, pipeline riêng) thì dùng <b>Claude Agent SDK</b>: <code>@anthropic-ai/claude-agent-sdk</code> (TS) hoặc <code>claude-agent-sdk</code> (Python).</p>
+
+<h3>7.3 Từ branch đến PR merged</h3>
+<table>
+<tr><th>Lệnh</th><th>Làm gì</th></tr>
+<tr><td><code>/ship</code></td><td>Commit, push, mở PR, tự review, sửa lỗi thật, rồi <b>canh</b> PR (CI fail, conflict, comment) cho đến khi merge. Không bao giờ tự merge.</td></tr>
+<tr><td><code>/steward</code></td><td>Chỉ canh một PR đã mở: CI đỏ thì sửa, reviewer comment thì xử lý.</td></tr>
+</table>
+
+<h3>7.4 Hạ tầng &amp; deploy</h3>
+<ol class="steps">
+<li><b>Container hóa</b>: “Viết Dockerfile multi-stage cho apps/api, non-root user, healthcheck, image &lt; 200MB”. Kiểm tra bằng <code>docker build</code> ngay trong session.</li>
+<li><b>IaC</b>: Terraform/Helm/compose. Thêm <code>"ask": ["Bash(terraform apply *)"]</code> để Claude không bao giờ tự apply.</li>
+<li><b>Deploy</b>: với Vercel, dùng skill <code>/vercel:deploy</code> (preview) và <code>/vercel:deploy prod</code>; quản lý biến môi trường bằng <code>/vercel:env</code>. Với Render/Fly/AWS, viết skill <code>/release</code> riêng.</li>
+<li><b>Skill /release</b> chứa checklist: migrate DB (backup trước), deploy, smoke test, tag, release notes. Đặt <code>disable-model-invocation: true</code> để chỉ bạn mới gọi được.</li>
+<li><b>Runbook</b>: nhờ Claude viết <code>docs/runbook.md</code> gồm rollback, xoay vòng secret và xử lý sự cố thường gặp.</li>
+</ol>
+<h3>7.5 Checklist trước khi lên production</h3>
+<table>
+<tr><th>Hạng mục</th><th>Kiểm tra</th></tr>
+<tr><td>Môi trường</td><td>Có preview cho mỗi PR, staging giống prod, biến môi trường đủ ở cả ba nơi (nhờ Claude so <code>.env.example</code> với danh sách env trên platform)</td></tr>
+<tr><td>Secrets</td><td>Nằm trong secret store của CI hoặc platform, không có trong repo. Nhờ Claude quét lịch sử git tìm secret bị lộ (gitleaks)</td></tr>
+<tr><td>Dữ liệu</td><td>Backup tự động, đã thử restore ít nhất một lần</td></tr>
+<tr><td>Quan sát</td><td>Error tracking, log, uptime check, alert gửi về Slack/email</td></tr>
+<tr><td>Rollback</td><td>Biết lệnh rollback deploy và migration, đã thử trên staging</td></tr>
+<tr><td>Bảo mật</td><td><code>/security-review</code> trên toàn bộ nhánh release, <code>pnpm audit</code>, security headers, rate limit</td></tr>
+<tr><td>Pháp lý</td><td>Trang điều khoản, chính sách quyền riêng tư, cookie consent nếu cần</td></tr>
+<tr><td>SEO &amp; chia sẻ</td><td>Metadata, Open Graph, sitemap, robots.txt</td></tr>
+</table>
+<h3>7.6 Kiểm soát chi phí AI</h3>
+<ul>
+<li><code>/usage</code> để theo dõi. Trong CI, đặt <code>--max-budget-usd</code> và <code>--max-turns</code>.</li>
+<li>Gán <code>model: haiku</code> hoặc <code>sonnet</code> cho subagent làm việc đơn giản (search, review migration), còn <code>opus</code> để cho kiến trúc và debug.</li>
+<li><code>/code-review ultra</code> tính phí riêng, nên chỉ dùng trước những release lớn.</li>
+</ul>
+<div class="file">.claude/skills/release/SKILL.md</div>
+<pre><code>---
+name: release
+description: Release production theo checklist
+disable-model-invocation: true
+allowed-tools: Bash(pnpm *), Bash(git tag *), Bash(gh release *)
+---
+Version hiện tại: !`git describe --tags --abbrev=0`
+1. Xác nhận CI main xanh (`gh run list -b main -L 1`)
+2. Sinh release notes từ commit kể từ tag trên
+3. HỎI tôi trước khi: migrate prod, deploy prod
+4. Smoke test các endpoint trong docs/runbook.md
+5. Tag + gh release create</code></pre>
+</section>
+
+<!-- ============ OPS ============ -->
+<section id="ops">
+<h2><span class="num">8</span>Sau release: vận hành &amp; lặp lại</h2>
+<table>
+<tr><th>Tính năng</th><th>Ứng dụng</th></tr>
+<tr><td><code>/loop 10m kiểm tra deploy &amp; error log</code></td><td>Lặp trong session hiện tại, ví dụ canh deploy hoặc theo dõi CI. Bỏ interval để Claude tự điều chỉnh nhịp.</td></tr>
+<tr><td><code>/schedule</code> (cloud routines)</td><td>Agent chạy trên cloud theo cron, khi có HTTP trigger hoặc GitHub event, kể cả khi máy bạn tắt. Ví dụ: “8h sáng mỗi ngày tổng hợp Sentry error mới, mở issue kèm phân tích”.</td></tr>
+<tr><td>Desktop scheduled tasks</td><td>Task định kỳ chạy trên máy (Hourly, Daily, Weekdays, Weekly, cron) khi app đang mở. Dùng khi cần truy cập file hoặc DB local, thứ mà routine trên cloud không với tới.</td></tr>
+<tr><td>Monitor / background task</td><td>Stream log của <code>pnpm dev</code> hay một job dài. Claude được báo khi có sự kiện, không cần poll.</td></tr>
+<tr><td>Cloud session + <code>/teleport</code></td><td>Giao việc dài (nâng version dependency, migrate lớn) cho cloud, xong thì kéo về máy để kiểm tra.</td></tr>
+<tr><td><code>/remote-control</code></td><td>Tiếp tục điều khiển session trên máy từ claude.ai hoặc điện thoại.</td></tr>
+<tr><td>Dashboard Artifact</td><td>Nhờ Claude dựng dashboard KPI (metrics trong PRD) thành trang để chia sẻ với team.</td></tr>
+</table>
+<h3>Sự cố production &amp; hotfix</h3>
+<ol class="steps">
+<li><b>Rollback trước, điều tra sau</b> nếu ảnh hưởng nhiều người dùng.</li>
+<li>Dán log hoặc Sentry trace: “Tái hiện bằng test trên branch <code>hotfix/*</code> tạo từ tag đang chạy trên prod”.</li>
+<li>Sửa tối thiểu, <code>/code-review high</code>, deploy, rồi merge ngược lại vào main.</li>
+<li><b>Postmortem</b>: nhờ Claude viết timeline và nguyên nhân gốc vào <code>docs/postmortems/</code>, rồi thêm rule, hook hoặc test để lỗi đó không lặp lại.</li>
+</ol>
+<h3>Bảo trì định kỳ</h3>
+<ul>
+<li>Nâng dependency hằng tuần: một routine <code>/schedule</code> mở PR nâng version và chạy test.</li>
+<li>Triage feedback và issue mới: phân loại, gắn label, tìm issue trùng.</li>
+<li><b>Retro với chính Claude</b>: mỗi khi Claude làm sai cùng một kiểu lần thứ hai, thêm vào CLAUDE.md, rule hoặc hook. Bộ cấu hình <code>.claude/</code> tốt dần theo thời gian.</li>
+</ul>
+<p>Vòng lặp tiếp theo: feedback từ user → cập nhật <code>docs/prd.md</code> → story mới → quay lại giai đoạn 2. Nhờ mọi thứ nằm trong file, vòng lặp sau nhanh hơn vòng đầu rất nhiều.</p>
+</section>
+
+<!-- ============ CASES ============ -->
+<section id="cases">
+<h2>Các case đặc biệt</h2>
+<table>
+<tr><th>Case</th><th>Điều chỉnh</th></tr>
+<tr><td><b>Repo có sẵn (brownfield)</b></td><td>Không bắt đầu từ PRD. Chạy <code>/init</code>, rồi nhờ Explore agent vẽ sơ đồ kiến trúc, luồng dữ liệu và chỉ ra “vùng nguy hiểm” (code không test, phần phức tạp). Viết test bao quanh trước khi sửa (characterization test).</td></tr>
+<tr><td><b>Làm theo team</b></td><td>Commit <code>.claude/settings.json</code>, <code>.claude/agents</code>, <code>.claude/skills</code> và <code>.mcp.json</code>. Cấu hình cá nhân để trong <code>CLAUDE.local.md</code> và <code>.claude/settings.local.json</code>. Đóng gói thành plugin hoặc marketplace nội bộ để nhiều repo dùng chung. Tổ chức lớn có thể dùng managed settings để áp quy định bắt buộc.</td></tr>
+<tr><td><b>Monorepo lớn</b></td><td>Mỗi app có CLAUDE.md riêng, Claude chỉ nạp khi làm trong thư mục đó. Dùng <code>claudeMdExcludes</code> để bỏ qua CLAUDE.md không liên quan, và rule có <code>paths:</code>.</td></tr>
+<tr><td><b>Dự án dùng LLM</b></td><td>Skill <code>claude-api</code> (hoặc <code>vercel:ai-sdk</code>) để dùng đúng model ID, tính năng caching và tool use. Thêm bộ eval vào CI giống như unit test.</td></tr>
+<tr><td><b>Ngôn ngữ người dùng là tiếng Việt</b></td><td>Từ đầu đã tách string ra file i18n, test dấu tiếng Việt khi tìm kiếm và sắp xếp, định dạng tiền VND và ngày dd/MM/yyyy.</td></tr>
+<tr><td><b>Windows</b></td><td><code>/sandbox</code> không hỗ trợ Windows native. Nên làm trong WSL2.</td></tr>
+<tr><td><b>Repo hoặc nội dung không tin cậy</b></td><td>Trang web, issue và output MCP có thể chứa prompt injection. Dùng mode <code>default</code>, bật sandbox, không cấp quyền push hay deploy khi Claude đọc nguồn bên ngoài.</td></tr>
+<tr><td><b>Mất kết nối Claude / hết quota</b></td><td>Vì mọi trạng thái nằm trong <code>docs/</code> và git, bạn (hoặc một session khác, model khác) tiếp tục được ngay.</td></tr>
+</table>
+</section>
+
+<!-- ============ TIMELINE ============ -->
+<section id="timeline">
+<h2>Lịch mẫu: MVP trong 2 tuần (1 dev + Claude)</h2>
+<table>
+<tr><th>Ngày</th><th>Việc</th><th>Tính năng Claude Code chính</th></tr>
+<tr><td>1</td><td>Setup, brainstorm, research, PRD</td><td>/init, plan mode, brainstorming, deep-research</td></tr>
+<tr><td>2</td><td>Stories, AC, data model, API contract</td><td>Subagent BA/PM, AskUserQuestion</td></tr>
+<tr><td>3</td><td>Flow, prototype, design tokens</td><td>frontend-design, Artifacts, Chrome</td></tr>
+<tr><td>4</td><td>ADR, plan, scaffold, CI cơ bản</td><td>opusplan, /install-github-app, hooks</td></tr>
+<tr><td>5–9</td><td>Build theo story, 2–3 track song song</td><td>Worktrees, /new-feature, subagents, /code-review</td></tr>
+<tr><td>10–11</td><td>E2E, bug bash, security, performance</td><td>Playwright MCP, /security-review, /code-review ultra</td></tr>
+<tr><td>12</td><td>Docker, IaC, staging</td><td>Skills deploy, permissions ask</td></tr>
+<tr><td>13</td><td>Release production</td><td>/release, /ship, /steward</td></tr>
+<tr><td>14</td><td>Monitoring, routine hằng ngày, retro</td><td>/schedule, /loop, dashboard artifact</td></tr>
+</table>
+</section>
+
+<!-- ============ CHEATSHEET ============ -->
+<section id="cheatsheet">
+<h2>Cheatsheet</h2>
+<div class="grid2">
+<div>
+<h3>Phím tắt</h3>
+<table>
+<tr><td><code>Shift+Tab</code></td><td>Đổi permission mode</td></tr>
+<tr><td><code>Esc</code></td><td>Dừng Claude</td></tr>
+<tr><td><code>Esc Esc</code></td><td>Rewind checkpoint</td></tr>
+<tr><td><code>Ctrl+B</code></td><td>Chuyển task xuống nền</td></tr>
+<tr><td><code>Ctrl+G</code></td><td>Sửa plan trong editor</td></tr>
+<tr><td><code>@file</code></td><td>Đưa file vào context</td></tr>
+<tr><td><code>! cmd</code></td><td>Tự chạy lệnh shell, output đưa vào context</td></tr>
+<tr><td><code>/memory</code></td><td>Sửa CLAUDE.md, bật/tắt auto memory</td></tr>
+</table>
+</div>
+<div>
+<h3>Lệnh hay dùng</h3>
+<table>
+<tr><td><code>/init</code> <code>/memory</code></td><td>Bộ nhớ dự án</td></tr>
+<tr><td><code>/plan</code> <code>/model</code> <code>/effort</code></td><td>Lập kế hoạch, chọn model</td></tr>
+<tr><td><code>/context</code> <code>/compact</code> <code>/clear</code></td><td>Quản lý context</td></tr>
+<tr><td><code>/mcp</code> <code>/plugin</code> <code>/hooks</code></td><td>Mở rộng</td></tr>
+<tr><td><code>/code-review</code> <code>/security-review</code> <code>/simplify</code></td><td>Chất lượng</td></tr>
+<tr><td><code>/ship</code> <code>/steward</code></td><td>PR → merge</td></tr>
+<tr><td><code>/loop</code> <code>/schedule</code> <code>/tasks</code></td><td>Tự động hóa</td></tr>
+<tr><td><code>/usage</code> <code>/status</code> <code>/config</code></td><td>Theo dõi &amp; cấu hình</td></tr>
+</table>
+</div>
+</div>
+
+<h3>Ai làm gì: Claude Code feature × vai trò</h3>
+<table>
+<tr><th>Vai trò</th><th>Feature cốt lõi</th><th>Đầu ra</th></tr>
+<tr><td>Product</td><td>Plan mode, deep-research, brainstorming, Artifacts/Docs</td><td>PRD, research</td></tr>
+<tr><td>BA</td><td>Subagent, AskUserQuestion, doc-brd, MCP tracker</td><td>Stories, AC, contract</td></tr>
+<tr><td>UX/UI</td><td>frontend-design, ui-ux-pro-max, Artifacts, Chrome</td><td>Prototype, tokens</td></tr>
+<tr><td>Architect</td><td>opusplan, Plan agent, Explore</td><td>ADR, plan</td></tr>
+<tr><td>FE/BE</td><td>Worktrees, skills, hooks, subagents, checkpoints</td><td>Code + test</td></tr>
+<tr><td>QA</td><td>Playwright MCP, /code-review, /security-review</td><td>Test suite, report</td></tr>
+<tr><td>DevOps</td><td>GitHub Actions, <code>claude -p</code>, /ship, /steward, /schedule</td><td>CI/CD, release</td></tr>
+</table>
+</section>
+
+<!-- ============ PITFALLS ============ -->
+<section id="pitfalls">
+<h2>Bẫy thường gặp</h2>
+<div class="card"><h4>❌ Một session khổng lồ làm mọi thứ</h4>Context bị loãng thì chất lượng giảm. ✅ Mỗi story một session (<code>/clear</code>), và state nằm trong file <code>docs/</code>.</div>
+<div class="card"><h4>❌ Để Claude viết cả test lẫn code cùng lúc</h4>Claude dễ sửa test cho khớp với bug. ✅ Commit test trước, ghi rõ “không sửa test”, và thêm hook chặn sửa <code>*.spec.ts</code> ở bước implement nếu cần.</div>
+<div class="card"><h4>❌ Nhét mọi quy tắc vào CLAUDE.md</h4>File dài thì Claude bỏ sót. ✅ CLAUDE.md dưới 200 dòng, chi tiết đưa vào <code>.claude/rules/</code> theo path, quy tắc bắt buộc thì dùng hook hoặc deny.</div>
+<div class="card"><h4>❌ Bỏ qua plan mode cho task lớn</h4>Sai hướng từ đầu thì tốn gấp mười lần để sửa. ✅ Task nào trên 3 file thì <code>/plan</code> trước, đọc plan rồi mới cho chạy.</div>
+<div class="card"><h4>❌ Cho quyền rộng ở môi trường thật</h4>✅ <code>deny</code> cho secret, <code>ask</code> cho push/migrate/apply, <code>bypassPermissions</code> chỉ dùng trong container. Bật <code>/sandbox</code>.</div>
+<div class="card"><h4>❌ Tin “đã xong” mà không kiểm chứng</h4>✅ Yêu cầu Claude chạy test, mở browser và đưa bằng chứng (output, screenshot). Hook <code>Stop</code> chạy typecheck/test.</div>
+<div class="card"><h4>❌ MCP quá nhiều</h4>Mỗi server chiếm context. ✅ Chỉ bật những server cần cho giai đoạn hiện tại, kiểm tra bằng <code>/context</code>.</div>
+</section>
+
+<footer>
+Tổng hợp từ tài liệu chính thức của Claude Code (code.claude.com/docs) tại thời điểm 11/2026. Tính năng thay đổi nhanh, nên kiểm tra <code>/help</code> và changelog khi có điều gì đó khác đi. Một số MCP server bên thứ ba (Playwright, Figma, DBHub) cần kiểm tra lại tên package và URL trước khi dùng.
+</footer>
+</main>
+</div>
+</body>
+</html>

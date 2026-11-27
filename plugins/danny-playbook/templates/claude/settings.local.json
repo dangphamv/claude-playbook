@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": ["Bash(git status)", "Bash(git diff *)", "Bash(git log *)", "Bash(git show *)"],
+    "ask": ["Bash(git push *)", "Bash(gh pr merge *)", "Bash(terraform apply *)", "Bash(kubectl apply *)"],
+    "deny": ["Read(./.env)", "Read(./.env.local)", "Read(./.env.*.local)", "Read(./.env.production*)", "Read(./secrets/**)", "Bash(rm -rf /*)", "Bash(git push --force*)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Read|Edit|Write", "hooks": [{ "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/danny-playbook-guard-env.sh" }] }
+    ],
+    "PostToolUse": [
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/danny-playbook-post-edit.sh", "timeout": 60 }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/danny-playbook-stop-check.sh", "timeout": 300 }] }
+    ],
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/danny-playbook-session-start.sh" }] }
+    ]
+  }
+}

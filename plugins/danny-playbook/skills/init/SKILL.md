@@ -1,0 +1,30 @@
+---
+name: init
+description: Set up the current project for the danny-playbook workflow — agents, phase skills, hooks, rules, permissions and CLAUDE.local.md, all kept out of git. Works for new and existing projects.
+disable-model-invocation: true
+argument-hint: "[one-line description of the project or the work ahead]"
+---
+Work ahead: $ARGUMENTS
+Kit root: ${CLAUDE_PLUGIN_ROOT}
+Project: !`pwd`
+Git: !`git rev-parse --is-inside-work-tree 2>/dev/null && git log --oneline -3 2>/dev/null; git ls-files | wc -l | xargs echo "tracked files:"`
+Already set up: !`test -f .claude/playbook.json && cat .claude/playbook.json || echo "no"`
+Manifests: !`ls package.json pnpm-workspace.yaml turbo.json pyproject.toml requirements.txt go.mod Cargo.toml pom.xml build.gradle Makefile docker-compose.yml compose.yaml 2>/dev/null; ls .github/workflows 2>/dev/null`
+Existing Claude config: !`ls CLAUDE.md AGENTS.md .claude 2>/dev/null; ls .claude/agents .claude/skills 2>/dev/null`
+
+You are installing a local, uncommitted toolkit. Follow the steps in order and stop at every CHECKPOINT.
+
+1. If this is not a git repository, ask whether to run `git init`. STOP until answered.
+2. If `.claude/playbook.json` already exists, say so and offer `/danny-playbook:update` instead; STOP.
+3. Detect: greenfield (few or no tracked files) vs existing codebase; the stack; real commands for format/lint/typecheck/test/build (package.json scripts, Makefile, CI workflows, pyproject). Prefer commands that already exist in the project. For `format`, the command receives a file path as its last argument (e.g. `pnpm exec prettier --write`, `ruff format`); leave it empty if nothing fits.
+4. CHECKPOINT 1 — one AskUserQuestion call:
+   - Docs (PRD, ADR, stories, log): "tracked" — committed under docs/ (your own project) — or "private" — kept in .playbook/docs and excluded from git (someone else's / team repo).
+   - Confirm the detected commands (show them; offer "edit").
+   - Project type confirmation: new product / feature work on an existing codebase.
+   STOP until answered.
+5. Run: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/install-kit.sh" "$PWD" --docs <tracked|private>` and show its output. If it prints a WARNING about files not excluded, stop and report.
+6. Write the confirmed commands into `.claude/playbook.json` (`commands.*`), using jq.
+7. Fill CLAUDE.local.md "Stack" and "Commands" sections with what you detected (short, factual). If a committed CLAUDE.md or AGENTS.md exists, do not edit it; CLAUDE.local.md complements it.
+8. Create 1-3 path rules in `.claude/rules/` that fit this stack (e.g. api.md for the backend folder, db.md for migrations), each under 10 lines, then add their paths to `.claude/playbook.manifest` and re-run step 5's script (it is idempotent and refreshes the git exclude block).
+9. Verify: `git status --porcelain --untracked-files=all` shows none of the kit files; `bash -n` each hook; run `.claude/hooks/danny-playbook-guard-env.sh` with `{"tool_input":{"file_path":".env"}}` on stdin and confirm exit 2.
+10. Report in a short table what was created, that it is excluded from git, and that hooks and skills load in the NEXT session (`/exit`, then `claude` again in this folder). Then recommend: greenfield → `/pb-product <idea>`; existing codebase → `/pb-adopt`. Append the first row to the playbook log: `| <date> | 0-setup | docs <mode>, commands confirmed | <why> | .claude/playbook.json |`. STOP.

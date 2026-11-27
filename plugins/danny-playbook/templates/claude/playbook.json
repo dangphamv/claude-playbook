@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "kit": "danny-playbook",
+  "docs": { "mode": "tracked", "dir": "docs" },
+  "commands": {
+    "format": "",
+    "lint": "",
+    "typecheck": "",
+    "test": "",
+    "build": ""
+  },
+  "phase": "0-setup"
+}

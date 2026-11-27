@@ -1,0 +1,9 @@
+{
+  "name": "danny-playbook",
+  "version": "0.1.0",
+  "description": "Sets up a project for the 8-phase Claude Code playbook (product → BA → UX → architecture → build → QA → release → operate) with agents, skills, hooks and rules kept out of git.",
+  "author": { "name": "Danny Pham" },
+  "repository": "https://github.com/dangphamv/claude-playbook",
+  "license": "MIT",
+  "keywords": ["workflow", "tdd", "adr", "prd", "playbook", "scaffold"]
+}
